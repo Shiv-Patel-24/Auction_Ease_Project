@@ -1,0 +1,52 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Rating with Range Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .stars {
+            font-size: 40px;
+            letter-spacing: 5px;
+            color: gold;
+        }
+
+        .highlight {
+            color: gold;
+        }
+
+        input[type="range"] {
+            width: 200px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Rate Us</h2>
+    <div class="stars" id="stars">★★★★★</div>
+    <input type="range" min="1" max="5" step="1" value="5" id="rating">
+
+    <script>
+        const starsElement = document.getElementById("stars");
+        const ratingInput = document.getElementById("rating");
+
+        function updateStars(value) {
+            let stars = "★★★★★".slice(0, value).padEnd(5, "☆"); // Fills with stars and empty stars
+            starsElement.innerHTML = stars;
+        }
+
+        ratingInput.addEventListener("input", function () {
+            updateStars(this.value);
+        });
+
+        updateStars(ratingInput.value); // Initialize stars
+    </script>
+
+</body>
+</html> -->

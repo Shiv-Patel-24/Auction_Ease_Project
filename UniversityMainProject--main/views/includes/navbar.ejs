@@ -1,0 +1,226 @@
+<nav class="navbar glass-navbar">
+  <div class="navbar-container">
+    <!-- Left: Logo (unchanged) -->
+    <a href="/" class="navbar-logo">AuctionEase</a>
+
+    <!-- Right: Wallet + Profile -->
+    <div class="navbar-right">
+      <% if (currUser) { %>
+        <!-- Precompute display name (Google name -> username -> email prefix) -->
+        <% 
+          const displayName = currUser.name 
+                              || currUser.username 
+                              || (currUser.email ? currUser.email.split('@')[0] : 'Profile');
+          const avatarUrl = currUser.avatar 
+                            || currUser.profilePicture 
+                            || '/images/default-avatar.png';
+        %>
+
+        <!-- Wallet shows live balance (with SVG icon) -->
+        <a href="/wallet" class="wallet-btn" aria-label="Wallet">
+          <!-- Wallet SVG Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="wallet-icon"
+               viewBox="0 0 24 24"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="2"
+               stroke-linecap="round"
+               stroke-linejoin="round"
+               aria-hidden="true">
+            <path d="M3 7h18" />
+            <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
+            <circle cx="16" cy="12" r="1" />
+          </svg>
+          <span class="wallet-label">Wallet —</span>
+          ₹<span id="nav-balance"><%= Number(currUser.walletBalance || 0).toLocaleString("en-IN") %></span>
+        </a>
+
+        <!-- Profile dropdown -->
+        <div class="dropdown navbar-profile">
+          <div class="dropdown-toggle" onclick="toggleProfileDropdown()">
+            <img 
+              src="<%= avatarUrl %>" 
+              alt="profile" 
+              class="navbar-avatar"
+            />
+            <span class="navbar-username"><%= displayName %></span>
+          </div>
+          <div class="dropdown-menu" id="profileDropdown">
+            <a href="/">Home</a>
+            <a href="/listings">Listings</a>
+            <a href="/listings/new">New Listing</a>
+            <a href="/logout">Logout</a>
+          </div>
+        </div>
+      <% } else { %>
+        <!-- Guest view -->
+        <a href="/login" class="wallet-btn">Login</a>
+        <a href="/signup" class="wallet-btn">Register</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .glass-navbar {
+    backdrop-filter: blur(16px);
+    background: rgba(18, 18, 18, 0.269);
+    border-bottom: 1px solid rgba(19, 19, 19, 0.1);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    font-family: 'SF Pro Display', 'Segoe UI', sans-serif;
+  }
+
+  .navbar-container {
+    display: flex;
+    justify-content: space-between; /* logo left, actions right */
+    align-items: center;
+    gap: 50rem; /* 👈 fixed gap between AuctionEase and right section */
+  }
+
+  .navbar-logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2b2b2b;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .navbar-logo:hover { color: #ffffff; }
+
+  .navbar-right {
+    margin-left: auto;     /* push to far right */
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Wallet Button */
+  .wallet-btn {
+    display: inline-flex;              /* align icon + text */
+    align-items: center;
+    gap: 0.5rem;                       /* space between icon and text */
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    color: #2b2b2b;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.12s ease;
+    will-change: background, transform;
+  }
+  .wallet-btn:hover { background: rgba(255, 255, 255, 0.25); }
+  .wallet-btn:active { transform: translateY(1px); }
+
+  .wallet-icon {
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    color: #2b2b2b; /* uses currentColor from .wallet-btn */
+  }
+  .wallet-label {
+    opacity: 0.9;
+  }
+
+  /* Dropdown */
+  .dropdown { position: relative; display: inline-block; }
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    right: 0;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .dropdown-menu a {
+    display: block;
+    padding: 12px 20px;
+    color: #2b2b2b;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+
+  .dropdown-menu a:hover {
+    background: rgba(0, 123, 255, 0.2);
+    transform: translateX(5px);
+    color: #000;
+  }
+
+  .dropdown.show .dropdown-menu { display: block; }
+
+  /* Profile pill */
+  .navbar-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.4rem 0.8rem;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .navbar-profile:hover { background: rgba(255, 255, 255, 0.25); }
+
+  .navbar-avatar {
+    width: 45px; height: 45px; border-radius: 50%;
+    object-fit: cover; border: 2px solid #2b2b2b;
+  }
+  .navbar-username { font-size: 1rem; font-weight: 600; color: #2b2b2b; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+  function toggleProfileDropdown() {
+    document.querySelector(".navbar-profile").classList.toggle("show");
+  }
+  window.onclick = function(event) {
+    if (!event.target.closest('.navbar-profile')) {
+      document.querySelector(".navbar-profile")?.classList.remove("show");
+    }
+  }
+
+  // 🔄 Live balance updater for logged-in users
+  (function () {
+    const balEl = document.getElementById("nav-balance");
+    if (!balEl) return; // not logged in or element missing
+
+    const fmtINR = n => Number(n || 0).toLocaleString("en-IN");
+
+    async function fetchBalance() {
+      try {
+        const res = await fetch("/api/me/balance", { headers: { "Accept": "application/json" } });
+        if (!res.ok) return; // ignore errors silently
+        const data = await res.json();
+        if (typeof data.balance !== "undefined") {
+          balEl.textContent = fmtINR(data.balance);
+        }
+      } catch (e) {
+        // network errors ignored
+      }
+    }
+
+    // Initial pull
+    fetchBalance();
+
+    // Update when tab regains focus
+    window.addEventListener("focus", fetchBalance);
+
+    // Update every 15s
+    setInterval(fetchBalance, 15000);
+  })();
+</script>

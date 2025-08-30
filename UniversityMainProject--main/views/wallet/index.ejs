@@ -1,0 +1,194 @@
+<% layout("layouts/boilerplate.ejs") %>
+
+<!-- Font Awesome for wallet icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  body {
+    background: radial-gradient(circle at top left, #f9fbff, #eef4ff, #e6f0ff, #f8faff);
+    min-height: 100vh;
+  }
+
+  .wallet-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    color: #1c1c1e;
+  }
+
+  /* Blue glass effect for Wallet heading */
+  .wallet-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1d4ed8;
+    background: rgba(59, 130, 246, 0.25);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    padding: 0.4rem 1.2rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+    letter-spacing: 0.5px;
+  }
+
+  .wallet-title i {
+    font-size: 1.3rem;
+    color: #1d4ed8;
+  }
+
+  .wallet-chip {
+    border: 1px solid rgba(59,130,246,0.25);
+    background: rgba(59,130,246,0.10);
+    color: #1d4ed8;
+    font-weight: 600;
+    padding: .45rem .85rem;
+    border-radius: .75rem;
+    cursor: pointer;
+    transition: background .25s ease;
+  }
+  .wallet-chip:hover { background: rgba(59,130,246,0.18); }
+
+  .wallet-badge-success {
+    border: 1px solid rgba(16,185,129,.35);
+    background: rgba(16,185,129,.15);
+    color:#065f46;
+    font-weight: 700;
+  }
+  .wallet-badge-danger {
+    border: 1px solid rgba(239,68,68,.35);
+    background: rgba(239,68,68,.15);
+    color:#7f1d1d;
+    font-weight: 700;
+  }
+</style>
+
+<div class="container py-4 py-md-5">
+  <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-3">
+    <div>
+      <!-- Wallet heading with icon -->
+      <h2 class="wallet-title">
+        <i class="fa-solid fa-wallet"></i> Wallet
+      </h2>
+      <p class="text-muted mb-0 mt-2">Top up and track your recent transactions.</p>
+    </div>
+    <div class="fs-5">
+      Balance:
+      <span class="badge rounded-pill px-3 py-2 wallet-badge-success">
+        ₹<%= (user.walletBalance || 0).toLocaleString("en-IN") %>
+      </span>
+    </div>
+  </div>
+
+  <% if (success) { %>
+    <div class="alert alert-success wallet-card mb-3">✅ Top-up successful!</div>
+  <% } %>
+  <% if (cancelled) { %>
+    <div class="alert alert-warning wallet-card mb-3">⚠️ Top-up cancelled.</div>
+  <% } %>
+
+  <!-- Wallet glass card -->
+  <div class="wallet-card p-4 p-md-5">
+    <!-- Top-up form -->
+    <form id="topup-form" class="row g-3 align-items-center mb-4">
+      <div class="col-12 col-sm-auto">
+        <label for="amount" class="form-label fw-semibold">Add Money (₹)</label>
+        <input id="amount" type="number" min="1" class="form-control" placeholder="Enter amount" required />
+      </div>
+      <div class="col-12 col-sm-auto">
+        <label class="form-label d-none d-sm-block">&nbsp;</label>
+        <button type="submit" id="topup-btn" class="btn btn-primary px-4">Add Money</button>
+      </div>
+      <div class="col-12">
+        <div class="d-flex flex-wrap gap-2 mt-2">
+          <button type="button" class="wallet-chip" data-amt="100">+ ₹100</button>
+          <button type="button" class="wallet-chip" data-amt="200">+ ₹200</button>
+          <button type="button" class="wallet-chip" data-amt="500">+ ₹500</button>
+          <button type="button" class="wallet-chip" data-amt="1000">+ ₹1,000</button>
+        </div>
+      </div>
+    </form>
+
+    <hr class="my-4" />
+
+    <!-- Transactions -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="mb-0">Recent Transactions</h5>
+      <a href="/listings" class="btn btn-outline-secondary btn-sm">Back to Listings</a>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Reference</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% const txns = (user.walletTransactions || []).slice().reverse(); %>
+          <% if (!txns.length) { %>
+            <tr>
+              <td colspan="4" class="text-muted py-4 text-center">No transactions yet.</td>
+            </tr>
+          <% } else { %>
+            <% txns.slice(0, 12).forEach(t => { %>
+              <tr>
+                <td>
+                  <% if (t.type === 'credit') { %>
+                    <span class="badge wallet-badge-success rounded-pill px-3 py-2">Credit</span>
+                  <% } else { %>
+                    <span class="badge wallet-badge-danger rounded-pill px-3 py-2">Debit</span>
+                  <% } %>
+                </td>
+                <td>₹<%= Number(t.amount || 0).toLocaleString("en-IN") %></td>
+                <td><%= new Date(t.createdAt).toLocaleString() %></td>
+                <td><code><%= t.ref || "—" %></code></td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Quick chips increment
+  document.querySelectorAll('[data-amt]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById('amount');
+      input.value = Math.max(1, Number(input.value || 0) + Number(btn.dataset.amt));
+      input.focus();
+    });
+  });
+
+  // Top-up flow
+  document.getElementById('topup-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('topup-btn');
+    const amount = parseInt(document.getElementById('amount').value, 10);
+    if (!amount || amount < 1) return alert("Please enter a valid amount.");
+    btn.setAttribute('disabled', 'disabled');
+    try {
+      const res = await fetch('/wallet/topup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      });
+      const data = await res.json();
+      if (data?.url) window.location.href = data.url;
+      else alert(data?.error || "Failed to initiate top-up");
+    } catch {
+      alert("Failed to initiate top-up");
+    } finally {
+      btn.removeAttribute('disabled');
+    }
+  });
+</script>

@@ -1,0 +1,229 @@
+<% layout("/layouts/boilerplate", { showNavbar: false, showLoader: false }) %>
+
+
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: linear-gradient(145deg, #f0f0f3, #d1d1d6);
+    color: #1c1c1e;
+  }
+
+  .login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at center, #dcdcdc, #f3f3f3);
+    padding: 2rem;
+  }
+
+  .login-card {
+    animation: fadeInUp 0.8s ease-out;
+    background: rgba(255, 255, 255, 0.35);
+    padding: 2.5rem;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    width: 100%;
+    max-width: 480px;
+    color: #1f1f1f;
+    transition: transform 0.3s ease;
+  }
+
+  .login-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .animated-logo-container {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .animated-logo-text {
+    font-size: 2.6rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #000, #0080ff, #000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: lightSweep 3.5s linear infinite;
+  }
+
+  @keyframes lightSweep {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+
+  @keyframes fadeInUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .quote {
+    font-size: 0.95rem;
+    font-style: italic;
+    text-align: center;
+    color: #5c5c5c;
+    margin-bottom: 1.8rem;
+  }
+
+  .form-label {
+    font-weight: 600;
+    margin-left: 4px;
+  }
+
+  .form-control {
+    background-color: rgba(255, 255, 255, 0.25);
+    border: none;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    color: #1c1c1e;
+    transition: all 0.25s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 0 3px rgba(0, 140, 255, 0.2);
+    outline: none;
+  }
+
+  .btn-login {
+    background: linear-gradient(to right, #008cff, #008cff);
+    border: none;
+    border-radius: 14px;
+    padding: 0.75rem;
+    font-weight: bold;
+    color: #fff;
+    box-shadow: 0 6px 16px rgb(49, 119, 241);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-login:hover {
+    background: linear-gradient(to right, #5ca3c6, #5ca3c6);
+    transform: scale(1.02);
+    box-shadow: 0 8px 20px rgba(45, 134, 223, 0.5);
+  }
+
+  a {
+    color: #007aff;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  a:hover {
+    color: #004ecb;
+  }
+
+  .text-center {
+    text-align: center;
+  }
+  
+  .or-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #999;
+    margin: 1.25rem 0;
+  }
+  .or-separator::before,
+  .or-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+  }
+  .or-separator:not(:empty)::before {
+    margin-right: .25em;
+  }
+  .or-separator:not(:empty)::after {
+    margin-left: .25em;
+  }
+
+  .btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #ffffff;
+    border: 1px solid #d1d1d6;
+    border-radius: 14px;
+    font-weight: 600;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-google:hover {
+    background-color: #f7f7f7;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .google-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+  }
+</style>
+
+<div class="login-container">
+  <div class="login-card">
+    
+    <div class="animated-logo-container">
+      <h1 class="animated-logo-text">AuctionEase</h1>
+    </div>
+
+    <h2 class="text-center mb-3">Login</h2>
+    <div class="quote">"Access exclusive bids and your dashboard."</div>
+
+    <form action="/login" method="POST" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" name="username" class="form-control" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required />
+      </div>
+
+      <button type="submit" class="btn btn-login w-100">Login</button>
+
+      <div class="or-separator">or</div>
+      
+      <a href="/auth/google" class="btn-google mb-3">
+        <svg class="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.618-3.229-11.383-7.575l-6.571,4.819C9.656,39.663,16.318,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C43.021,36.251,44,30.686,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+        Continue with Google
+      </a>
+      
+      <div class="text-center">
+        <small>Don't have an account? <a href="/signup">Sign up</a></small>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
+  // This is your existing form validation script
+  (function () {
+    'use strict';
+    window.addEventListener('load', function () {
+      var forms = document.getElementsByClassName('needs-validation');
+      Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    }, false);
+  })();
+</script>

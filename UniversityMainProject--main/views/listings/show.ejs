@@ -1,0 +1,375 @@
+<% layout("layouts/boilerplate.ejs") %>
+
+<style>
+  /* Page background */
+  body {
+    background: radial-gradient(1200px 800px at 20% -10%, #eaf4ff 0%, #d7ecff 30%, #cfe7ff 55%, #e6f2ff 100%);
+    color: #1c1c1e;
+  }
+
+  /* Shell card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08);
+    overflow: hidden;
+  }
+
+  /* Layout */
+  .details-wrap { padding: 1.25rem; }
+  .details-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 1.25rem;
+  }
+  @media (max-width: 992px) { .details-grid { grid-template-columns: 1fr; } }
+
+  /* Media area (prevents image cutting) */
+  .media-box {
+    background: linear-gradient(180deg, #f7fbff, #eef6ff);
+    border: 1px solid rgba(0,0,0,0.06);
+    border-radius: 1rem;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 340px;
+  }
+  .media-box img {
+    width: 100%;
+    height: auto;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 0.75rem;
+    background: #fff;
+  }
+
+  /* Headings */
+  h3 {
+    color: #0f172a !important;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  /* Badges */
+  .price-box {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #0b4a6f;
+    background: rgba(33, 147, 176, 0.12);
+    padding: .5rem .9rem;
+    border-radius: .75rem;
+    border: 1px solid rgba(33,147,176,0.25);
+  }
+  .countdown-box {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #b91c1c;
+    background: rgba(255, 59, 48, 0.10);
+    padding: .45rem .8rem;
+    border-radius: .75rem;
+    border: 1px solid rgba(255, 59, 48, 0.18);
+  }
+
+  .meta p { margin-bottom: .5rem; color: #1f2937; font-size: 1rem; }
+
+  /* Buttons */
+  .btn {
+    border-radius: .9rem;
+    font-weight: 700;
+    padding: .6rem 1.1rem;
+    transition: transform .18s ease, box-shadow .18s ease, opacity .2s;
+    border: none;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-primary {
+    background: linear-gradient(145deg, #2193b0, #6dd5ed);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(33,147,176,.35);
+  }
+  .btn-secondary {
+    background: linear-gradient(145deg, #cc2b5e, #753a88);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(117,58,136,.35);
+  }
+  .btn-success {
+    background: linear-gradient(145deg, #56ab2f, #a8e063);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(86,171,47,.35);
+  }
+  .btn-warning {
+    background: linear-gradient(145deg, #ffb347, #ffcc33);
+    color: #111827;
+    box-shadow: 0 8px 20px rgba(255, 204, 51, 0.35);
+  }
+  .btn-dark { background:#111827; color:#fff; }
+  .btn-danger { background:#e11d48; color:#fff; }
+
+  /* Review / form */
+  .section-title { display:flex; align-items:center; gap:.6rem; font-weight:800; color:#0f172a; }
+  label { color:#0f172a; font-weight:700; }
+
+  .form-control, textarea, input[type="text"] {
+    background: rgba(255,255,255,0.8);
+    border: 1px solid rgba(15,23,42,0.08);
+    color: #0f172a;
+    border-radius: .75rem;
+  }
+  .form-control:focus, textarea:focus, input:focus {
+    background: #fff;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 .25rem rgba(59,130,246,.15);
+    color:#0f172a;
+  }
+
+  /* Range slider */
+  .form-range {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, #e2e8f0, #f1f5f9);
+    border-radius: 999px;
+    outline: none;
+  }
+  .form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: #2563eb;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 10px rgba(37,99,235,.35);
+    cursor: pointer;
+    margin-top: -7px;
+  }
+  .form-range::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background:#2563eb; border:3px solid #fff;
+    box-shadow: 0 4px 10px rgba(37,99,235,.35);
+    cursor:pointer;
+  }
+
+  .divider {
+    height:1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,.08), transparent);
+    margin: 1.25rem 0 1.5rem;
+  }
+
+  .mt-2{margin-top:.5rem}.mt-3{margin-top:1rem}.mt-4{margin-top:1.25rem}.mt-5{margin-top:2rem}
+  .mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:1rem}.mb-4{margin-bottom:1.25rem}.mb-5{margin-bottom:2rem}
+</style>
+
+<div class="row mt-5 mb-5">
+  <div class="col-10 offset-1 text-center mb-4">
+    <h3>🔍 Listing Details</h3>
+  </div>
+
+  <div class="col-md-10 offset-md-1 glass-card">
+    <div class="details-wrap">
+      <div class="details-grid">
+        <!-- Left: Image (no cropping) -->
+        <div class="media-box">
+          <img src="<%= listing.image %>" alt="listing_image" />
+        </div>
+
+        <!-- Right: Details -->
+        <div>
+          <div class="mb-2" style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
+            <!-- Keep ₹ outside; update inner span only -->
+            <span class="price-box">₹ <span id="current-price" data-price="<%= listing.price %>"><%= listing.price.toLocaleString("en-IN") %></span></span>
+            <span class="countdown-box">⏳ <span id="countdown" class="fw-bold"></span></span>
+          </div>
+
+          <div class="meta mt-3">
+            <p class="card-text"><strong>Owner:</strong> <%= listing.owner.username %></p>
+            <p class="card-text"><%= listing.description %></p>
+            <div class="divider"></div>
+            <p class="card-text"><strong>Location:</strong> <%= listing.location %></p>
+            <p class="card-text"><strong>Country:</strong> <%= listing.country %></p>
+            <p class="card-text"><strong>Bidding Starts At:</strong> <%= new Date(listing.startTime).toLocaleString() %></p>
+            <p class="card-text"><strong>Bidding Ends At:</strong> <%= new Date(listing.endTime).toLocaleString() %></p>
+          </div>
+
+          <!-- Bid Buttons -->
+          <div class="mt-4">
+            <button type="button" class="btn btn-primary mx-1 bid-btn" data-amount="50">+ ₹50</button>
+            <button type="button" class="btn btn-secondary mx-1 bid-btn" data-amount="100">+ ₹100</button>
+            <button type="button" class="btn btn-success mx-1 bid-btn" data-amount="200">+ ₹200</button>
+          </div>
+
+          <% if (currUser) { %>
+            <div class="mt-4 d-flex flex-wrap gap-2">
+              <!-- Buy with Card (Stripe) -->
+              <button id="buy-now-btn" type="button" class="btn btn-warning px-4">
+                💳 Buy with Card — ₹<span id="buy-price"><%= listing.price.toLocaleString("en-IN") %></span>
+              </button>
+              <!-- Buy with Wallet -->
+              <button id="buy-wallet-btn" type="button" class="btn btn-dark px-4">
+                🪙 Buy with Wallet — ₹<span id="buy-wallet-price"><%= listing.price.toLocaleString("en-IN") %></span>
+              </button>
+            </div>
+          <% } %>
+
+          <% if (currUser && currUser._id.equals(listing.owner._id)) { %>
+            <div class="mt-4">
+              <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark mx-1">Edit</a>
+              <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="d-inline">
+                <button class="btn btn-danger" type="submit">Delete</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="mt-5">
+        <div class="divider"></div>
+        <h4 class="section-title mb-3">⭐ Leave a Rating & Comment</h4>
+        <form action="/listings/<%= listing._id %>/reviews" method="POST">
+          <div class="mb-3">
+            <label for="rating" class="form-label">Rating</label>
+            <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range" required />
+          </div>
+          <div class="mb-3">
+            <label for="comment" class="form-label">Comment</label>
+            <textarea name="review[comment]" class="form-control" id="comment" rows="5" placeholder="Share your thoughts…" required></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">Submit Review</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const priceSpan       = document.getElementById("current-price");
+    const buyPrice        = document.getElementById("buy-price");
+    const buyWalletPrice  = document.getElementById("buy-wallet-price");
+    const buyNowBtn       = document.getElementById("buy-now-btn");
+    const buyWalletBtn    = document.getElementById("buy-wallet-btn");
+    const countdownEl     = document.getElementById("countdown");
+    const bidButtons      = document.querySelectorAll(".bid-btn");
+
+    // Initial price
+    const initialAttr = Number(priceSpan?.getAttribute("data-price"));
+    let currentPrice = (!isNaN(initialAttr) && initialAttr > 0)
+      ? Math.floor(initialAttr)
+      : Math.max(1, Math.floor(Number((priceSpan?.textContent || "0").replace(/[^0-9.]/g, ""))));
+
+    const fmtINR = (n) => Number(n).toLocaleString("en-IN");
+    const renderPrice = () => {
+      if (priceSpan)      priceSpan.textContent      = fmtINR(currentPrice);
+      if (buyPrice)       buyPrice.textContent       = fmtINR(currentPrice);
+      if (buyWalletPrice) buyWalletPrice.textContent = fmtINR(currentPrice);
+    };
+    renderPrice();
+
+    // Ensure bid buttons don't submit forms + wire increments
+    bidButtons.forEach(btn => {
+      if (btn.getAttribute("type") !== "button") btn.setAttribute("type","button");
+      btn.addEventListener("click", () => {
+        const inc = parseInt(btn.getAttribute("data-amount"));
+        if (!isNaN(inc) && inc > 0) { currentPrice += inc; renderPrice(); }
+      });
+    });
+
+    // Buy with Card (Stripe) - include purpose: "listing_purchase"
+    if (buyNowBtn) {
+      buyNowBtn.addEventListener("click", async () => {
+        try {
+          buyNowBtn.disabled = true;
+          const res = await fetch("/payment/create-checkout-session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              listingId: "<%= listing._id %>",
+              title: "<%= listing.title %>",
+              description: "<%= listing.description %>",
+              updatedPrice: currentPrice,
+              purpose: "listing_purchase"
+            }),
+          });
+          const data = await res.json();
+          if (!data.url) throw new Error(data.error || "Checkout session creation failed.");
+          window.location.href = data.url; // redirects to /payment/success on success (see routes/payment.js)
+        } catch (err) {
+          alert("❌ Payment failed: " + err.message);
+          console.error(err);
+        } finally {
+          buyNowBtn.disabled = false;
+        }
+      });
+    }
+
+    // Buy with Wallet - robust JSON handling + login redirect
+    if (buyWalletBtn) {
+      buyWalletBtn.addEventListener("click", async () => {
+        try {
+          buyWalletBtn.disabled = true;
+          const res = await fetch(`/listings/<%= listing._id %>/buy-wallet`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json"    // 👈 tell server we expect JSON
+            },
+            body: JSON.stringify({ amount: currentPrice })
+          });
+
+          if (res.status === 401) {
+            // not logged in (server should send JSON 401, but handle here too)
+            window.location.href = "/login";
+            return;
+          }
+
+          const ct = res.headers.get("content-type") || "";
+          if (!ct.includes("application/json")) {
+            // Server returned HTML (error page/redirect). Avoid weird characters.
+            const text = await res.text();
+            throw new Error("Unexpected response from server.");
+          }
+
+          const data = await res.json();
+          if (!res.ok || !data.ok) throw new Error(data.message || "Wallet purchase failed.");
+
+          alert(`✅ Purchased with wallet. New balance: ₹${(data.balance ?? 0).toLocaleString("en-IN")}`);
+          window.location.href = "/wallet?success=1";
+        } catch (err) {
+          alert("❌ " + err.message);
+          console.error(err);
+        } finally {
+          buyWalletBtn.disabled = false;
+        }
+      });
+    }
+
+    // Countdown (disables bidding when ended; Buy buttons remain available)
+    const endTime = new Date("<%= listing.endTime %>").getTime();
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const distance = endTime - now;
+      if (distance <= 0) {
+        if (countdownEl) countdownEl.textContent = "⏱ Bidding Ended";
+        clearInterval(timer);
+        bidButtons.forEach(btn => btn.disabled = true);
+        return;
+      }
+      const d = Math.floor(distance / (1000*60*60*24));
+      const h = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+      const m = Math.floor((distance % (1000*60*60)) / (1000*60));
+      const s = Math.floor((distance % (1000*60)) / 1000);
+      if (countdownEl) countdownEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }, 1000);
+  });
+</script>

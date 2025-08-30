@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment Success</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f0f0f0, #dbe9f4);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #2e7d32;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .btn-home {
+      background: linear-gradient(135deg, #4cafef, #2196f3);
+      color: white;
+      border: none;
+    }
+
+    .btn-home:hover {
+      background: linear-gradient(135deg, #2196f3, #1976d2);
+      transform: translateY(-2px);
+    }
+
+    .icon {
+      font-size: 3rem;
+      color: #2e7d32;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="glass-card">
+    <div class="icon">✅</div>
+    <h1>Payment Successful!</h1>
+    <p>Thank you for your payment. Your transaction has been completed successfully.</p>
+    <a href="/" class="btn btn-home">Go to Home</a>
+  </div>
+</body>
+</html>

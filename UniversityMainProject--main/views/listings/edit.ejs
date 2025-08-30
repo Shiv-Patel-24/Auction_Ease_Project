@@ -1,0 +1,133 @@
+<% layout("layouts/boilerplate.ejs") %>
+
+<style>
+  body {
+    /* Changed background to a light gray gradient */
+    background: linear-gradient(135deg,#d0e8ff,#e6f2ff);
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    color: #545252;
+  }
+
+  .form-container {
+    /* Made background more transparent and adjusted blur */
+    background: rgba(255, 255, 255, 0.4); /* Increased transparency */
+    backdrop-filter: blur(15px); /* Slightly less blur for better visibility */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 10px 45px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 0.7s ease-out forwards;
+    opacity: 0;
+    max-width: 720px;
+    margin-top: 2rem;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-heading {
+    font-weight: 600;
+    font-size: 2rem;
+    color: #111;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.6rem;
+    margin-bottom: 2rem;
+  }
+
+  .form-label {
+    font-weight: 700; /* Increased font-weight even more */
+    color: #000; /* Changed color to black for maximum visibility */
+    font-size: 1rem; /* Slightly increased font-size */
+  }
+
+  .custom-input {
+    background: rgba(255, 255, 255, 0.8);
+    color: #726060;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    padding: 0.7rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+  }
+
+  .custom-input:focus {
+    background-color: rgba(255, 255, 255, 1);
+    border-color: #66b2ff;
+    box-shadow: 0 0 10px rgba(102, 178, 255, 0.4);
+    color: #6c6c6c;
+  }
+
+  .btn-edit {
+    background: linear-gradient(135deg, #007aff, #00c6ff);
+    color: #fff;
+    font-weight: 600;
+    padding: 0.8rem;
+    border-radius: 14px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    letter-spacing: 0.4px;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .btn-edit:hover {
+    background: linear-gradient(135deg, #0051cc, #00aaff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 170, 255, 0.25);
+  }
+
+  .form-control::placeholder {
+    color: #777;
+  }
+</style>
+
+<div class="container py-4 d-flex justify-content-center">
+  <div class="form-container">
+    <h2 class="form-heading">Edit Your Listing</h2>
+
+    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT" novalidate class="needs-validation">
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" value="<%= listing.title %>" name="listing[title]" class="form-control custom-input" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="listing[description]" class="form-control custom-input" rows="3" required><%= listing.description %></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Image Link</label>
+        <input type="text" value="<%= listing.image %>" name="listing[image]" class="form-control custom-input" required>
+      </div>
+
+      <div class="row">
+        <div class="mb-3 col-md-4">
+          <label class="form-label">Price</label>
+          <input type="number" value="<%= listing.price %>" name="listing[price]" class="form-control custom-input" required>
+        </div>
+
+        <div class="mb-3 col-md-8">
+          <label class="form-label">Country</label>
+          <input type="text" value="<%= listing.country %>" name="listing[country]" class="form-control custom-input" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input type="text" value="<%= listing.location %>" name="listing[location]" class="form-control custom-input" required>
+      </div>
+
+      <button class="btn btn-edit w-100 mt-3">Save Changes</button>
+    </form>
+  </div>
+</div>

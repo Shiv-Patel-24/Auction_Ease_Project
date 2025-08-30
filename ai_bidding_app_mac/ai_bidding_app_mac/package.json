@@ -1,0 +1,15 @@
+{
+  "name": "ai_bidding_app_mac",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "pandas": "^0.0.3"
+  }
+}

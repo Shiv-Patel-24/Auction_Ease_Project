@@ -1,0 +1,208 @@
+<% layout("/layouts/boilerplate.ejs") %>
+<%= success %>
+
+<head>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+</head>
+
+<body class="bg-body-ios text-dark">
+  <div class="container py-4">
+    <h2 class="mb-4 fw-bold text-center display-5 animated-logo-text">
+      Welcome to <span class="text-dark">Auction</span><span class="gradient-highlight">Ease</span>
+    </h2>
+
+    <!-- Search Bar -->
+    <div class="mb-4">
+      <input type="text" id="searchInput" class="form-control shadow-sm premium-input-ios" placeholder="🔍 Search listings...">
+    </div>
+
+    <!-- Listings -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="listingsContainer">
+      <% for (let listings of allListings) { %>
+        <div class="col listing-card" data-title="<%= listings.title.toLowerCase() %>" data-aos="fade-up">
+          <div class="card h-100 ios-card shadow border-0 rounded-4">
+            <!-- Image -->
+            <div class="ratio ratio-4x3 overflow-hidden rounded-top image-wrapper-ios d-flex align-items-center justify-content-center">
+              <img src="<%= listings.image %>" alt="Listing Image" class="w-100 h-100 object-fit-contain p-3" />
+            </div>
+
+            <!-- Info -->
+            <div class="card-body text-center">
+              <h5 class="card-title text-dark mb-2 fw-semibold"><%= listings.title %></h5>
+
+              <!-- Countdown Timer -->
+              <% if (listings.endTime) { %>
+                <p class="text-danger small mb-1 fw-semibold">
+                  ⏳ Ends in: 
+                  <span class="countdown-timer" data-endtime="<%= new Date(listings.endTime).toISOString() %>">Loading...</span>
+                </p>
+              <% } else { %>
+                <p class="text-muted small mb-1">⏳ End Time Not Available</p>
+              <% } %>
+
+              <% if (listings.condition) { %>
+                <div class="mb-2">
+                  <span class="badge bg-light border border-warning text-dark text-capitalize fs-6"><%= listings.condition %></span>
+                </div>
+              <% } %>
+
+              <!-- Bid Button -->
+              <a href="/listings/<%= listings._id %>" class="btn btn-ios w-75">Place a Bid</a>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- AOS Library -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+  <script>
+    AOS.init({ duration: 700, once: true });
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const searchInput = document.getElementById("searchInput");
+      const listingCards = document.querySelectorAll(".listing-card");
+
+      searchInput.addEventListener("input", () => {
+        const query = searchInput.value.toLowerCase();
+        listingCards.forEach(card => {
+          const title = card.getAttribute("data-title");
+          card.style.display = title.includes(query) ? "block" : "none";
+        });
+      });
+
+      const timers = document.querySelectorAll(".countdown-timer");
+      timers.forEach(timer => {
+        const endTime = new Date(timer.getAttribute("data-endtime")).getTime();
+        if (isNaN(endTime)) {
+          timer.textContent = "Bidding Ended";
+          return;
+        }
+
+        const updateCountdown = () => {
+          const now = new Date().getTime();
+          const distance = endTime - now;
+
+          if (distance <= 0) {
+            timer.textContent = "Bidding Ended";
+            return;
+          }
+
+          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+          timer.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        };
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      });
+    });
+  </script>
+
+  <!-- Custom Style -->
+  <style>
+    body {
+      font-family: 'Inter', 'SF Pro Display', sans-serif;
+      background: linear-gradient(135deg,#d0e8ff,#e6f2ff);
+      color: #1c1c1e;
+    }
+
+    .animated-logo-text {
+      font-size: 2.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #000, #0080ff, #000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: lightSweep 3.5s linear infinite;
+    }
+
+    @keyframes lightSweep {
+      0% { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+
+    .premium-input-ios {
+      border-radius: 40px;
+      padding: 14px 20px;
+      font-size: 1.05rem;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid #ddd;
+    }
+
+    .premium-input-ios:focus {
+      border-color: #008cff;
+      box-shadow: 0 0 0 0.25rem rgba(0, 140, 255, 0.25);
+    }
+
+    .ios-card {
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .ios-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.1);
+    }
+
+    .image-wrapper-ios {
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 22px;
+      image-radius: 22px;
+      overflow: hidden;
+    }
+
+    .btn-ios {
+      background: linear-gradient(to right, #008cff, #008cff);
+      color: white;
+      font-weight: 600;
+      border-radius: 14px;
+      padding: 10px 0;
+      box-shadow: 0 6px 16px rgb(49, 119, 241);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .btn-ios:hover {
+      background: linear-gradient(to right, #5ca3c6, #5ca3c6);
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(45, 134, 223, 0.5);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .badge {
+      padding: 0.5em 0.8em;
+      font-size: 0.85rem;
+      border-radius: 1em;
+    }
+
+    .countdown-timer {
+      font-weight: 600;
+      color: #3668a1;
+    }
+
+    @media (max-width: 768px) {
+      .card-title {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</body>

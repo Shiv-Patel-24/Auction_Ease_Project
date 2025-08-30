@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AuctionEase – Invoice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <style>
+    :root {
+      --bg-dark: #0e0e0e;
+      --text-light: #f5f5f5;
+      --glass: rgba(255, 255, 255, 0.05);
+      --border-glow: linear-gradient(135deg, #ff5f6d, #ffc371, #47e4ff, #8e54e9);
+      --orange: #ff7b00;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, var(--bg-dark), #1c1c1c);
+      padding: 2rem;
+      color: var(--text-light);
+      animation: fadeIn 1s ease;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      color: var(--orange);
+      margin-bottom: 2rem;
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-shadow: 0 0 8px rgba(255, 123, 0, 0.5);
+      animation: glowText 1.5s ease-in-out forwards;
+    }
+
+    .box {
+      max-width: 650px;
+      margin: auto;
+      padding: 2rem 2.5rem;
+      border-radius: 20px;
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      border: 2px solid transparent;
+      border-image: var(--border-glow) 1;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      animation: popIn 0.8s ease forwards;
+    }
+
+    .details p {
+      font-size: 1.15rem;
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+
+    .details strong {
+      color: #ffd080;
+      font-weight: 600;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #bbbbbb;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.97); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes glowText {
+      from { opacity: 0; text-shadow: none; }
+      to { opacity: 1; text-shadow: 0 0 6px rgba(255, 123, 0, 0.4); }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      .box {
+        padding: 1.5rem;
+      }
+
+      .details p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🧾 AuctionEase Invoice</h1>
+
+  <div class="box">
+    <div class="details">
+      <p><strong>Product:</strong> <%= title %></p>
+      <p><strong>Description:</strong> <%= description %></p>
+      <p><strong>Amount Paid:</strong> ₹<%= amount %></p>
+      <p><strong>Date:</strong> <%= date %></p>
+    </div>
+
+    <div class="footer">
+      Thank you for your purchase with <strong>AuctionEase</strong>!
+    </div>
+  </div>
+
+</body>
+</html>

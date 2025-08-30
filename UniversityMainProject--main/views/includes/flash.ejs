@@ -1,0 +1,139 @@
+<%
+// Normalize flash vars to arrays so .forEach is always safe
+const _successArr = Array.isArray(success) ? success : (success ? [success] : []);
+const _errorArr   = Array.isArray(error)   ? error   : (error   ? [error]   : []);
+
+// Remove empty/falsy messages
+const successArr = _successArr.filter(m => typeof m === "string" && m.trim().length);
+const errorArr   = _errorArr.filter(m => typeof m === "string" && m.trim().length);
+%>
+
+<!-- FLASH MESSAGES -->
+<div class="flash-region" aria-live="polite" aria-atomic="true">
+  <!-- ✅ Success Flash (supports multiple) -->
+  <% successArr.forEach(function(msg, i){ %>
+    <div class="flash-toast flash-success"
+         role="status"
+         style="--target-top: <%= 24 + (i * 64) %>px;">
+      <span><%= msg.replace("Shiv Project", "AuctionEase") %></span>
+      <button type="button" class="close-btn" aria-label="Close">✕</button>
+    </div>
+  <% }) %>
+
+  <!-- ❌ Error Flash (supports multiple) -->
+  <% errorArr.forEach(function(msg, j){ %>
+    <div class="flash-toast flash-error"
+         role="alert"
+         aria-live="assertive"
+         style="--target-top: <%= 24 + (successArr.length + j) * 64 %>px;">
+      <span><%= msg %></span>
+      <button type="button" class="close-btn" aria-label="Close">✕</button>
+    </div>
+  <% }) %>
+</div>
+
+<script>
+  (function () {
+    const AUTO_HIDE_MS = 4000;
+    const HIDE_ANIM_MS = 500;
+
+    const toasts = Array.from(document.querySelectorAll(".flash-toast"));
+
+    function show(el) {
+      requestAnimationFrame(() => el.classList.add("show"));
+    }
+    function scheduleHide(el, ms) {
+      clearTimeout(el._hideTimer);
+      el._hideTimer = setTimeout(() => hide(el), ms);
+    }
+    function hide(el) {
+      el.classList.remove("show");
+      el.classList.add("slide-out");
+      setTimeout(() => el.remove(), HIDE_ANIM_MS);
+    }
+
+    toasts.forEach((el, idx) => {
+      show(el);
+      scheduleHide(el, AUTO_HIDE_MS + idx * 200); // slight stagger
+
+      el.addEventListener("mouseenter", () => clearTimeout(el._hideTimer));
+      el.addEventListener("mouseleave", () => scheduleHide(el, 1500));
+      el.querySelector(".close-btn")?.addEventListener("click", () => hide(el));
+    });
+  })();
+</script>
+
+<style>
+  .flash-region { position: relative; z-index: 2000; }
+
+  .flash-toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -120px;                 /* start hidden above */
+    opacity: 0;
+    max-width: 90%;
+    width: 480px;
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-family: "SF Pro Display","Inter","Segoe UI",sans-serif;
+    font-size: 0.98rem;
+    letter-spacing: 0.2px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    transition: top .5s ease, opacity .5s ease, transform .5s ease;
+  }
+
+  /* Slide-in target position via --target-top */
+  .flash-toast.show {
+    top: var(--target-top, 24px);
+    opacity: 1;
+  }
+
+  /* Slide-out */
+  .flash-toast.slide-out {
+    top: -120px;
+    opacity: 0;
+  }
+
+  /* Themes */
+  .flash-success {
+    border-left: 5px solid #10b981; /* emerald */
+    background: rgba(16, 185, 129, 0.12);
+    color: #e6fff4;
+  }
+  .flash-error {
+    border-left: 5px solid #ef4444; /* red */
+    background: rgba(239, 68, 68, 0.12);
+    color: #ffe6e6;
+  }
+
+  /* Close button */
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    line-height: 1;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    padding: .25rem .25rem;
+    border-radius: 8px;
+    transition: opacity .2s ease, transform .1s ease, background .2s ease;
+  }
+  .close-btn:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+  .close-btn:active { transform: scale(0.98); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flash-toast { transition: none; }
+    .flash-toast.show { top: var(--target-top, 24px); opacity: 1; }
+  }
+</style>

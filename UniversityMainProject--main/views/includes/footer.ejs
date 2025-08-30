@@ -1,0 +1,173 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
+
+  /* Footer Container */
+  .footer-modern {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    color: black;
+    font-family: 'Inter', sans-serif;
+    padding: 20px 0;
+    font-size: 0.9rem;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .footer-modern .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+
+  /* Footer Quote */
+  .footer-quote {
+    font-style: italic;
+    color: black;
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  /* Social Icons */
+  .footer-icon i {
+    font-size: 1.4rem;
+    margin: 0 10px;
+    color: black;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+  }
+
+  .footer-icon i:hover {
+    transform: scale(1.3);
+    text-shadow: 0 0 8px #ff4d6d, 0 0 12px #ff4d6d, 0 0 16px #ff4d6d;
+  }
+
+  /* Brand & Links */
+  .f-info-brand {
+    color: black;
+    margin-top: 8px;
+    font-weight: 500;
+  }
+
+  .f-info-links {
+    margin-top: 6px;
+  }
+
+  .f-info-links a {
+    color: black;
+    margin: 0 10px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    cursor: pointer;
+  }
+
+  .f-info-links a:hover {
+    color: #ad1b1b;
+    text-shadow: 0 0 4px #ad1b1b;
+  }
+
+  /* Bottom-left slide popup */
+  .popup-glass {
+    position: fixed;
+    left: 20px;
+    bottom: -150px; /* hidden initially */
+    width: 300px;
+    max-width: 90%;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 16px;
+    padding: 15px 20px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    color: black;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    transition: all 0.5s ease;
+    z-index: 9999;
+    opacity: 0;
+  }
+
+  .popup-glass.show {
+    bottom: 20px; /* slide up */
+    opacity: 1;
+  }
+
+  .popup-glass h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+
+  .popup-glass p {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 576px) {
+    .footer-modern {
+      font-size: 0.8rem;
+      padding: 16px 0;
+    }
+
+    .footer-icon i {
+      font-size: 1.2rem;
+      margin: 0 6px;
+    }
+
+    .popup-glass {
+      width: 90%;
+      left: 5%;
+      padding: 12px 16px;
+    }
+  }
+</style>
+
+<footer class="footer-modern text-center">
+  <div class="container">
+    <div class="footer-quote">Experience Premium Bidding with AuctionEase.</div>
+
+    <div class="footer-icon mb-3">
+      <a href="#"><i class="fa-brands fa-square-facebook"></i></a>
+      <a href="#"><i class="fa-brands fa-square-instagram"></i></a>
+      <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+    </div>
+
+    <div class="f-info-brand">&copy; AuctionEase Private Limited</div>
+    <div class="f-info-links">
+      <a onclick="showPopup('privacy')">Privacy</a>
+      <a onclick="showPopup('terms')">Terms</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Popup HTML -->
+<div id="privacy" class="popup-glass">
+  <h3>Privacy Policy</h3>
+  <p>
+    AuctionEase respects your privacy. All personal information collected during bidding is securely stored and never shared with third parties.
+  </p>
+</div>
+
+<div id="terms" class="popup-glass">
+  <h3>Terms & Conditions</h3>
+  <p>
+    By using AuctionEase, you agree to follow all bidding rules and policies. Violation may result in account suspension or legal action.
+  </p>
+</div>
+
+<script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script>
+
+<script>
+  function showPopup(id) {
+    const popup = document.getElementById(id);
+    popup.classList.add('show');
+
+    // Hide after 5 seconds
+    setTimeout(() => {
+      popup.classList.remove('show');
+    }, 5000);
+  }
+</script>
