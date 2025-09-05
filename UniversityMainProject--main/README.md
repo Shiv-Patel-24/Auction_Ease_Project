@@ -30,5 +30,4 @@ This project includes a fully functional **Admin Panel** to manage listings, use
 
 ---
 
-## 📂 Folder Structure
 
