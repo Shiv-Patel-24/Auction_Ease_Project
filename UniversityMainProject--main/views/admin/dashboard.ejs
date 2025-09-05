@@ -1,0 +1,87 @@
+<%- include('../includes/navbar') %>
+<link rel="stylesheet" href="/css/dashboard.css">
+
+<div class="container">
+  <h1 class="dashboard-title">Admin Control Panel</h1>
+  <div class="dashboard-row">
+    <div class="table-card">
+      <h3 class="table-title">Users</h3>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach(user => { %>
+            <tr>
+              <td><%= user.username %></td>
+              <td><%= user.email %></td>
+              <td>
+                <% if (user.isAdmin) { %>
+                  <span class="badge badge-admin">Admin</span>
+                <% } else { %>
+                  <span class="badge badge-user">User</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <!-- User Pagination (optional) -->
+      <% if (userPagination && userPagination.pageCount > 1) { %>
+        <nav class="pagination-nav">
+          <% for(let i=1; i<=userPagination.pageCount; i++) { %>
+            <% if (i === userPagination.page) { %>
+              <span class="active"><%= i %></span>
+            <% } else { %>
+              <a href="?userPage=<%= i %>&listingPage=<%= listingPagination.page %>"><%= i %></a>
+            <% } %>
+          <% } %>
+        </nav>
+      <% } %>
+    </div>
+
+    <div class="table-card">
+      <h3 class="table-title">Listings</h3>
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% listings.forEach(listing => { %>
+            <tr>
+              <td><%= listing.title %></td>
+              <td><%= listing._id %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+      <!-- Listing Pagination (optional) -->
+      <% if (listingPagination && listingPagination.pageCount > 1) { %>
+        <nav class="pagination-nav">
+          <% for(let i=1; i<=listingPagination.pageCount; i++) { %>
+            <% if (i === listingPagination.page) { %>
+              <span class="active"><%= i %></span>
+            <% } else { %>
+              <a href="?userPage=<%= userPagination.page %>&listingPage=<%= i %>"><%= i %></a>
+            <% } %>
+          <% } %>
+        </nav>
+      <% } %>
+      <h3 class="table-title" style="margin-top: 30px;">Recent Reviews</h3>
+      <ul class="list-group">
+        <% reviews.forEach(review => { %>
+          <li class="list-group-item"><%= review.body %></li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<%- include('../includes/footer') %>

@@ -57,3 +57,12 @@ module.exports.isReviewAuthor = async(req, res, next) =>{
   }
   next();
 }
+
+module.exports.isAdmin = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    req.flash('error', 'You do not have permission to access this page');
+    res.redirect('/');
+  }
+};
