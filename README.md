@@ -1,5 +1,3 @@
-<img width="1919" height="866" alt="Screenshot 2025-09-05 170317" src="https://github.com/user-attachments/assets/5dd64e53-8dd5-48a5-b499-3fae32b18491" /># Auction Ease Project - Admin Panel
-
 ## 📌 Overview
 
 **Auction Ease** is an online auction platform built with **Node.js**, **Express**, **EJS**, and **MongoDB**.  
