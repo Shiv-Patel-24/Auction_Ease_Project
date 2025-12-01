@@ -1,0 +1,121 @@
+<%- include('../includes/navbar') %>
+<link rel="stylesheet" href="/css/profile.css">
+
+<main class="profile-page">
+  <!-- Profile Hero -->
+  <section class="profile-hero glass-card gradient-hero reveal">
+    <div class="hero-left">
+      <% const avatar = (user && (user.profilePicture || user.avatar)) || '/images/default-avatar.png'; %>
+      <div class="avatar-wrap pulse">
+        <img src="<%= avatar %>" alt="avatar" class="avatar-img" />
+      </div>
+      <div class="user-meta">
+        <h1 class="user-name"><%= user ? (user.name || user.username || (user.email && user.email.split('@')[0])) : 'User' %></h1>
+        <p class="user-email"><%= user ? (user.email || '') : '' %></p>
+        <p class="user-joined">Joined: <%= user && user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—' %></p>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="balance-chip glass-chip">
+        <svg class="chip-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="M3 7h18"/><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/><circle cx="16" cy="12" r="1"/>
+        </svg>
+        <div>
+          <div class="chip-label">Wallet</div>
+          <div class="chip-value">₹ <span id="profile-balance"><%= user ? Number(user.walletBalance || 0).toLocaleString('en-IN') : '0' %></span></div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <a href="/profile/edit" class="btn btn-primary gradient-btn">Edit Profile</a>
+        <a href="/purchases" class="btn btn-outline glass-btn">My Purchases (<%= (purchased && purchased.length) || 0 %>)</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- My Listings -->
+  <section class="listings-section">
+    <h2 class="section-title">My Listings (<%= (listings && listings.length) || 0 %>)</h2>
+
+    <% if (!listings || listings.length === 0) { %>
+      <div class="empty-card glass-card small reveal">
+        <p>No listings yet. <a href="/listings/new">Create one</a>.</p>
+      </div>
+    <% } else { %>
+      <div class="cards-grid">
+        <% listings.forEach(listing => { %>
+          <article class="item-card glass-card reveal hover-glow">
+            <div class="item-thumb">
+              <img src="<%= listing.image || '/images/default-listing.jpg' %>" alt="listing" />
+            </div>
+            <div class="item-body">
+              <a href="/listings/<%= listing._id %>" class="item-title"><%= listing.title %></a>
+              <div class="item-meta">
+                <span class="price">₹ <%= listing.price || 'N/A' %></span>
+                <span class="date"><%= listing.createdAt ? new Date(listing.createdAt).toLocaleDateString() : '' %></span>
+              </div>
+            </div>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+ <section class="purchases-section">
+  <h2 class="section-title">Purchased Items (<%= (purchased && purchased.length) || 0 %>)</h2>
+
+  <% if (!purchased || purchased.length === 0) { %>
+    <div class="empty-card glass-card small reveal">
+      <p>You haven't bought anything yet.</p>
+    </div>
+  <% } else { %>
+    <div class="purchase-grid">
+      <% purchased.forEach(item => { %>
+        <article class="purchase-card glass-card reveal hover-glow">
+          <div class="purchase-thumb">
+            <img src="<%= item.image || '/images/default-listing.jpg' %>" alt="product" />
+          </div>
+          <div class="purchase-body">
+            <h3 class="purchase-title"><%= item.title %></h3>
+            <div class="purchase-meta">
+              <span class="price">₹ <%= item.price || 0 %></span>
+              <span class="qty">Qty: <%= item.qty || item.quantity || 1 %></span>
+            </div>
+            <div class="purchase-footer">
+              <span class="date-chip">Bought: <%= item.purchasedAt ? new Date(item.purchasedAt).toLocaleDateString() : '' %></span>
+              <span class="status-badge">Completed</span>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+</main>
+
+<script>
+  // reveal-on-scroll using IntersectionObserver
+  (function() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in-view');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // sync profile balance with navbar
+    const navBalEl = document.getElementById('nav-balance');
+    const profBalEl = document.getElementById('profile-balance');
+    if (navBalEl && profBalEl) {
+      const sync = () => profBalEl.textContent = navBalEl.textContent;
+      sync();
+      window.addEventListener('focus', sync);
+    }
+  })();
+</script>

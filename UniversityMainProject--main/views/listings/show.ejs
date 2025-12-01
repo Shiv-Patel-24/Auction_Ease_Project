@@ -1,13 +1,11 @@
 <% layout("layouts/boilerplate.ejs") %>
 
 <style>
-  /* Page background */
+  /* Page background & styling kept from your original file */
   body {
     background: radial-gradient(1200px 800px at 20% -10%, #eaf4ff 0%, #d7ecff 30%, #cfe7ff 55%, #e6f2ff 100%);
     color: #1c1c1e;
   }
-
-  /* Shell card */
   .glass-card {
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(14px);
@@ -17,157 +15,79 @@
     box-shadow: 0 12px 32px rgba(16, 24, 40, 0.08);
     overflow: hidden;
   }
-
-  /* Layout */
   .details-wrap { padding: 1.25rem; }
-  .details-grid {
-    display: grid;
-    grid-template-columns: 1.15fr 1fr;
-    gap: 1.25rem;
-  }
+  .details-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 1.25rem; }
   @media (max-width: 992px) { .details-grid { grid-template-columns: 1fr; } }
-
-  /* Media area (prevents image cutting) */
-  .media-box {
-    background: linear-gradient(180deg, #f7fbff, #eef6ff);
-    border: 1px solid rgba(0,0,0,0.06);
-    border-radius: 1rem;
-    padding: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 340px;
-  }
-  .media-box img {
-    width: 100%;
-    height: auto;
-    max-height: 70vh;
-    object-fit: contain;
-    border-radius: 0.75rem;
-    background: #fff;
-  }
-
-  /* Headings */
-  h3 {
-    color: #0f172a !important;
-    font-size: 2rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-
-  /* Badges */
-  .price-box {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #0b4a6f;
-    background: rgba(33, 147, 176, 0.12);
-    padding: .5rem .9rem;
-    border-radius: .75rem;
-    border: 1px solid rgba(33,147,176,0.25);
-  }
-  .countdown-box {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: 0.98rem;
-    font-weight: 700;
-    color: #b91c1c;
-    background: rgba(255, 59, 48, 0.10);
-    padding: .45rem .8rem;
-    border-radius: .75rem;
-    border: 1px solid rgba(255, 59, 48, 0.18);
-  }
-
-  .meta p { margin-bottom: .5rem; color: #1f2937; font-size: 1rem; }
-
-  /* Buttons */
-  .btn {
-    border-radius: .9rem;
-    font-weight: 700;
-    padding: .6rem 1.1rem;
-    transition: transform .18s ease, box-shadow .18s ease, opacity .2s;
-    border: none;
-  }
-  .btn:hover { transform: translateY(-1px); }
-  .btn:active { transform: translateY(0); }
-
-  .btn-primary {
-    background: linear-gradient(145deg, #2193b0, #6dd5ed);
-    color: #fff;
-    box-shadow: 0 6px 16px rgba(33,147,176,.35);
-  }
-  .btn-secondary {
-    background: linear-gradient(145deg, #cc2b5e, #753a88);
-    color: #fff;
-    box-shadow: 0 6px 16px rgba(117,58,136,.35);
-  }
-  .btn-success {
-    background: linear-gradient(145deg, #56ab2f, #a8e063);
-    color: #fff;
-    box-shadow: 0 6px 16px rgba(86,171,47,.35);
-  }
-  .btn-warning {
-    background: linear-gradient(145deg, #ffb347, #ffcc33);
-    color: #111827;
-    box-shadow: 0 8px 20px rgba(255, 204, 51, 0.35);
-  }
+  .media-box { background: linear-gradient(180deg, #f7fbff, #eef6ff); border: 1px solid rgba(0,0,0,0.06); border-radius: 1rem; padding: 0.75rem; display:flex; align-items:center; justify-content:center; min-height:340px; }
+  .media-box img { width:100%; height:auto; max-height:70vh; object-fit:contain; border-radius:.75rem; background:#fff; }
+  h3 { color:#0f172a !important; font-size:2rem; font-weight:800; letter-spacing:-0.02em; }
+  .price-box { display:inline-flex; align-items:center; gap:.5rem; font-size:1.125rem; font-weight:700; color:#0b4a6f; background: rgba(33,147,176,0.12); padding:.5rem .9rem; border-radius:.75rem; border:1px solid rgba(33,147,176,0.25); }
+  .countdown-box { display:inline-flex; align-items:center; gap:.5rem; font-size:.98rem; font-weight:700; color:#b91c1c; background: rgba(255,59,48,0.10); padding:.45rem .8rem; border-radius:.75rem; border:1px solid rgba(255,59,48,0.18); }
+  .meta p { margin-bottom:.5rem; color:#1f2937; font-size:1rem; }
+  .btn { border-radius:.9rem; font-weight:700; padding:.6rem 1.1rem; transition: transform .18s ease, box-shadow .18s ease, opacity .2s; border:none; }
+  .btn:hover { transform: translateY(-1px); } .btn:active { transform: translateY(0); }
+  .btn-primary { background: linear-gradient(145deg, #2193b0, #6dd5ed); color:#fff; box-shadow:0 6px 16px rgba(33,147,176,.35); }
+  .btn-secondary { background: linear-gradient(145deg, #cc2b5e, #753a88); color:#fff; box-shadow:0 6px 16px rgba(117,58,136,.35); }
+  .btn-success { background: linear-gradient(145deg, #56ab2f, #a8e063); color:#fff; box-shadow:0 6px 16px rgba(86,171,47,.35); }
+  .btn-warning { background: linear-gradient(145deg, #ffb347, #ffcc33); color:#111827; box-shadow:0 8px 20px rgba(255,204,51,.35); }
   .btn-dark { background:#111827; color:#fff; }
   .btn-danger { background:#e11d48; color:#fff; }
-
-  /* Review / form */
-  .section-title { display:flex; align-items:center; gap:.6rem; font-weight:800; color:#0f172a; }
-  label { color:#0f172a; font-weight:700; }
-
-  .form-control, textarea, input[type="text"] {
-    background: rgba(255,255,255,0.8);
-    border: 1px solid rgba(15,23,42,0.08);
-    color: #0f172a;
-    border-radius: .75rem;
-  }
-  .form-control:focus, textarea:focus, input:focus {
-    background: #fff;
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 .25rem rgba(59,130,246,.15);
-    color:#0f172a;
-  }
-
-  /* Range slider */
-  .form-range {
-    -webkit-appearance: none;
-    width: 100%;
-    height: 8px;
-    background: linear-gradient(90deg, #e2e8f0, #f1f5f9);
-    border-radius: 999px;
-    outline: none;
-  }
-  .form-range::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    background: #2563eb;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 10px rgba(37,99,235,.35);
-    cursor: pointer;
-    margin-top: -7px;
-  }
-  .form-range::-moz-range-thumb {
-    width: 22px; height: 22px; border-radius: 50%;
-    background:#2563eb; border:3px solid #fff;
-    box-shadow: 0 4px 10px rgba(37,99,235,.35);
-    cursor:pointer;
-  }
-
-  .divider {
-    height:1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,.08), transparent);
-    margin: 1.25rem 0 1.5rem;
-  }
-
+  .divider { height:1px; background: linear-gradient(90deg, transparent, rgba(0,0,0,.08), transparent); margin:1.25rem 0 1.5rem; }
   .mt-2{margin-top:.5rem}.mt-3{margin-top:1rem}.mt-4{margin-top:1.25rem}.mt-5{margin-top:2rem}
   .mb-1{margin-bottom:.25rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:1rem}.mb-4{margin-bottom:1.25rem}.mb-5{margin-bottom:2rem}
+
+  /* Flash / toast styles (small corner toasts) */
+  #flash-container {
+    position: fixed;
+    right: 1rem;
+    top: 1rem;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    pointer-events: none;
+  }
+  .bid-flash {
+    pointer-events: auto;
+    min-width: 220px;
+    max-width: 360px;
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(250,250,250,0.82));
+    box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+    border: 1px solid rgba(16,24,40,0.04);
+    display:flex;
+    gap:0.6rem;
+    align-items:center;
+    font-weight:700;
+    color:#0f172a;
+  }
+  .bid-flash .close-flash { margin-left:auto; background:none; border:none; font-size:1.1rem; cursor:pointer; opacity:0.8; }
+  .hidden { display:none !important; }
+  .disabled-overlay { opacity: 0.6; pointer-events: none; }
+
+  /* SOLD badge style for show page */
+  .sold-badge {
+    display:inline-block;
+    margin-left: 10px;
+    background: linear-gradient(180deg, #ff385c, #e11d48);
+    color: #fff;
+    padding: 6px 10px;
+    font-weight:800;
+    border-radius: 999px;
+    box-shadow: 0 8px 24px rgba(225,29,72,0.18);
+    font-size: 0.9rem;
+  }
+
+  /* retry payment button style */
+  .btn-retry {
+    background: linear-gradient(145deg,#ff7a00,#ffb347);
+    color: #111827;
+    font-weight:800;
+  }
+
 </style>
 
 <div class="row mt-5 mb-5">
@@ -175,10 +95,31 @@
     <h3>🔍 Listing Details</h3>
   </div>
 
-  <div class="col-md-10 offset-md-1 glass-card">
+  <% /* ---------- Server-side flash alert (non-JS fallback) ---------- */ %>
+  <% if (typeof error !== 'undefined' && Array.isArray(error) && error.length) { %>
+    <div class="col-10 offset-1">
+      <div class="alert alert-danger" role="alert" style="margin-bottom:12px;">
+        <%= error[0] %>
+      </div>
+    </div>
+  <% } %>
+
+  <% /* Expose the server error flash to client JS: window.__serverFlashError */ %>
+  <script>
+    window.__serverFlashError = <%= JSON.stringify((typeof error !== 'undefined' && Array.isArray(error) && error.length) ? error[0] : "") %>;
+  </script>
+
+  <!-- container now includes raw numeric initial price and server-side buyer id and order/payment meta -->
+  <div class="col-md-10 offset-md-1 glass-card"
+       data-listing-id="<%= listing._id %>"
+       data-listing-sold="<%= listing.sold ? '1' : '0' %>"
+       data-initial-price="<%= (currentPriceToShow || listing.price || 0) %>"
+       data-server-buyer="<%= listing.buyer ? String(listing.buyer) : (listing.winner ? String(listing.winner) : '') %>"
+       data-order-id="<%= listing.order ? String(listing.order._id) : '' %>"
+       data-payment-status="<%= listing.order && listing.order.payment && listing.order.payment.status ? String(listing.order.payment.status) : '' %>">
     <div class="details-wrap">
       <div class="details-grid">
-        <!-- Left: Image (no cropping) -->
+        <!-- Left: Image -->
         <div class="media-box">
           <img src="<%= listing.image %>" alt="listing_image" />
         </div>
@@ -186,38 +127,78 @@
         <!-- Right: Details -->
         <div>
           <div class="mb-2" style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;">
-            <!-- Keep ₹ outside; update inner span only -->
-            <span class="price-box">₹ <span id="current-price" data-price="<%= listing.price %>"><%= listing.price.toLocaleString("en-IN") %></span></span>
-            <span class="countdown-box">⏳ <span id="countdown" class="fw-bold"></span></span>
+            <% /* Show price (final price visible even if sold). If sold, show SOLD badge too. */ %>
+            <span class="price-box">₹ <span id="current-price" data-listing-id="<%= listing._id %>"><%= (currentPriceToShow || listing.price || 0).toLocaleString("en-IN") %></span></span>
+
+            <% if (listing.sold) { %>
+              <span class="sold-badge">SOLD</span>
+            <% } %>
+
+            <!-- status label + timer text -->
+            <span class="countdown-box" id="auction-status-box" style="margin-left:8px">
+              <span id="auction-status-text">Loading…</span>
+              <strong style="margin-left:6px" id="countdown" class="fw-bold"></strong>
+            </span>
           </div>
 
           <div class="meta mt-3">
-            <p class="card-text"><strong>Owner:</strong> <%= listing.owner.username %></p>
-            <p class="card-text"><%= listing.description %></p>
+            <p><strong>Owner:</strong> <%= listing.owner.username %></p>
+            <p><%= listing.description %></p>
             <div class="divider"></div>
-            <p class="card-text"><strong>Location:</strong> <%= listing.location %></p>
-            <p class="card-text"><strong>Country:</strong> <%= listing.country %></p>
-            <p class="card-text"><strong>Bidding Starts At:</strong> <%= new Date(listing.startTime).toLocaleString() %></p>
-            <p class="card-text"><strong>Bidding Ends At:</strong> <%= new Date(listing.endTime).toLocaleString() %></p>
+            <p><strong>Location:</strong> <%= listing.location %></p>
+            <p><strong>Country:</strong> <%= listing.country %></p>
+            <p><strong>Bidding Starts At:</strong> <%= new Date(listing.startTime).toLocaleString() %></p>
+            <p><strong>Bidding Ends At:</strong> <%= new Date(listing.endTime).toLocaleString() %></p>
           </div>
 
           <!-- Bid Buttons -->
-          <div class="mt-4">
+          <div class="mt-4" id="bids-row">
             <button type="button" class="btn btn-primary mx-1 bid-btn" data-amount="50">+ ₹50</button>
             <button type="button" class="btn btn-secondary mx-1 bid-btn" data-amount="100">+ ₹100</button>
             <button type="button" class="btn btn-success mx-1 bid-btn" data-amount="200">+ ₹200</button>
           </div>
 
+          <% /* Server-side compute flags for initial rendering (kept as before) */ %>
+          <% 
+            const serverCurrentUserId = currUser ? String(currUser._id) : "";
+            const serverHighestBidderId = listing.highestBidder ? String(listing.highestBidder) : "";
+            const serverBuyerId = listing.buyer ? String(listing.buyer) : (listing.winner ? String(listing.winner) : "");
+            const canUseBuyButtonsInitially = (!isAuctionActive && serverCurrentUserId && serverBuyerId && serverCurrentUserId === serverBuyerId && !listing.sold);
+            const isBuyerInitially = (serverCurrentUserId && serverBuyerId && serverCurrentUserId === serverBuyerId);
+            // order/payment info: listing.order may not exist
+            const serverOrderId = listing.order ? String(listing.order._id) : "";
+            const serverPaymentStatus = (listing.order && listing.order.payment && listing.order.payment.status) ? String(listing.order.payment.status) : "";
+          %>
+
           <% if (currUser) { %>
-            <div class="mt-4 d-flex flex-wrap gap-2">
-              <!-- Buy with Card (Stripe) -->
-              <button id="buy-now-btn" type="button" class="btn btn-warning px-4">
-                💳 Buy with Card — ₹<span id="buy-price"><%= listing.price.toLocaleString("en-IN") %></span>
-              </button>
-              <!-- Buy with Wallet -->
-              <button id="buy-wallet-btn" type="button" class="btn btn-dark px-4">
-                🪙 Buy with Wallet — ₹<span id="buy-wallet-price"><%= listing.price.toLocaleString("en-IN") %></span>
-              </button>
+            <div class="mt-4 d-flex flex-wrap gap-2" id="buy-buttons-container">
+              <% if (listing.sold) { %>
+                <% if (isBuyerInitially) { %>
+                  <a href="/profile" class="btn btn-warning px-4">✅ View Orders</a>
+                <% } else { %>
+                  <button class="btn btn-dark px-4 sold-lock" disabled>🔒 Sold</button>
+                <% } %>
+              <% } else { %>
+                <button id="buy-now-btn" type="button" class="btn btn-warning px-4" 
+                  data-listing-id="<%= listing._id %>" 
+                  data-highest-bidder="<%= serverHighestBidderId %>" 
+                  data-buyer="<%= serverBuyerId %>"
+                  <% if (!canUseBuyButtonsInitially) { %> disabled aria-disabled="true" <% } %>
+                >
+                  💳 Buy with Card — ₹<span id="buy-price"><%= (currentPriceToShow || listing.price || 0).toLocaleString("en-IN") %></span>
+                </button>
+
+                <button id="buy-wallet-btn" type="button" class="btn btn-dark px-4" 
+                  data-listing-id="<%= listing._id %>" 
+                  data-highest-bidder="<%= serverHighestBidderId %>" 
+                  data-buyer="<%= serverBuyerId %>"
+                  <% if (!canUseBuyButtonsInitially) { %> disabled aria-disabled="true" <% } %>
+                >
+                  🪙 Buy with Wallet — ₹<span id="buy-wallet-price"><%= (currentPriceToShow || listing.price || 0).toLocaleString("en-IN") %></span>
+                </button>
+              <% } %>
+              <!-- Retry button placeholder (will be shown by JS if payment.status indicates) -->
+              <div id="retry-button-placeholder"></div>
             </div>
           <% } %>
 
@@ -231,6 +212,7 @@
           <% } %>
         </div>
       </div>
+      
 
       <!-- Reviews -->
       <div class="mt-5">
@@ -252,124 +234,572 @@
   </div>
 </div>
 
+<!-- Flash container for live bid messages -->
+<div id="flash-container" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Socket.IO -->
+<script src="/socket.io/socket.io.js"></script>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    // Elements
     const priceSpan       = document.getElementById("current-price");
     const buyPrice        = document.getElementById("buy-price");
     const buyWalletPrice  = document.getElementById("buy-wallet-price");
     const buyNowBtn       = document.getElementById("buy-now-btn");
     const buyWalletBtn    = document.getElementById("buy-wallet-btn");
     const countdownEl     = document.getElementById("countdown");
-    const bidButtons      = document.querySelectorAll(".bid-btn");
+    const auctionStatusText = document.getElementById("auction-status-text");
+    const bidButtons      = Array.from(document.querySelectorAll(".bid-btn"));
+    const flashContainer  = document.getElementById("flash-container");
+    const containerEl     = document.querySelector('[data-listing-id="<%= listing._id %>"]');
 
-    // Initial price
-    const initialAttr = Number(priceSpan?.getAttribute("data-price"));
-    let currentPrice = (!isNaN(initialAttr) && initialAttr > 0)
-      ? Math.floor(initialAttr)
-      : Math.max(1, Math.floor(Number((priceSpan?.textContent || "0").replace(/[^0-9.]/g, ""))));
+    const listingId = "<%= listing._id %>";
+    const currentUserId = "<%= currUser ? String(currUser._id) : '' %>";
+    let highestBidderId = "<%= listing.highestBidder ? String(listing.highestBidder) : '' %>";
+    let winnerId = "<%= listing.buyer ? String(listing.buyer) : (listing.winner ? String(listing.winner) : '') %>";
 
-    const fmtINR = (n) => Number(n).toLocaleString("en-IN");
+    // Parse times (server-rendered values) — render numeric epoch to avoid string parsing issues
+    const startTime = <%= new Date(listing.startTime).getTime() %>;
+    const endTime   = <%= new Date(listing.endTime).getTime() %>;
+
+    // Order/payment metadata from data attributes (server-rendered)
+    const orderId = containerEl && containerEl.dataset ? (containerEl.dataset.orderId || "") : "";
+    let paymentStatus = containerEl && containerEl.dataset ? (containerEl.dataset.paymentStatus || "") : "";
+
+    // initial price from server (number) - prefer raw data attribute (unformatted)
+    let currentPrice = 0;
+    try {
+      if (containerEl && containerEl.dataset && containerEl.dataset.initialPrice) {
+        currentPrice = Number(containerEl.dataset.initialPrice) || 0;
+      } else {
+        currentPrice = Number(<%= (currentPriceToShow || listing.price || 0) %>) || 0;
+      }
+      if ((!currentPrice || currentPrice === 0) && priceSpan) {
+        const parsed = Number((priceSpan.textContent || "0").replace(/[^\d.]/g, ""));
+        if (Number.isFinite(parsed) && parsed > 0) currentPrice = parsed;
+      }
+    } catch (e) {
+      console.error("Price init error:", e);
+      currentPrice = Number(<%= (currentPriceToShow || listing.price || 0) %>) || 0;
+    }
+
+    // read server-buyer from data attribute (if any)
+    const serverBuyer = (containerEl && containerEl.dataset && containerEl.dataset.serverBuyer) ? String(containerEl.dataset.serverBuyer) : "";
+
+    const fmtINR = (n) => Number(n || 0).toLocaleString("en-IN");
     const renderPrice = () => {
-      if (priceSpan)      priceSpan.textContent      = fmtINR(currentPrice);
-      if (buyPrice)       buyPrice.textContent       = fmtINR(currentPrice);
+      if (priceSpan) priceSpan.textContent = fmtINR(currentPrice);
+      if (buyPrice) buyPrice.textContent = fmtINR(currentPrice);
       if (buyWalletPrice) buyWalletPrice.textContent = fmtINR(currentPrice);
+
+      // also keep raw numeric data on buttons for other code to read
+      if (buyNowBtn) buyNowBtn.setAttribute('data-current-price', String(currentPrice));
+      if (buyWalletBtn) buyWalletBtn.setAttribute('data-current-price', String(currentPrice));
     };
     renderPrice();
 
-    // Ensure bid buttons don't submit forms + wire increments
+    // Helper to set UI state
+    const setStateNotStarted = () => {
+      bidButtons.forEach(b => b.disabled = true);
+      // while not started, buy disabled for everyone
+      disableBuyButtons();
+      auctionStatusText.textContent = "Starts in";
+    };
+    const setStateActive = () => {
+      bidButtons.forEach(b => b.disabled = false);
+      // While active: buy buttons must be disabled for everyone
+      disableBuyButtons();
+      auctionStatusText.textContent = "Ends in";
+    };
+    const setStateEnded = () => {
+      bidButtons.forEach(b => b.disabled = true);
+      // After auction ends: enable buy only for the winner (buyer) if listing not sold
+      if (currentUserId && winnerId && currentUserId === String(winnerId) && !isListingSold()) {
+        enableBuyButtons();
+      } else {
+        disableBuyButtons();
+      }
+      auctionStatusText.textContent = "Bidding ended";
+      if (countdownEl) countdownEl.textContent = "";
+    };
+
+    function enableBuyButtons() {
+      if (buyNowBtn) { buyNowBtn.disabled = false; buyNowBtn.removeAttribute('aria-disabled'); buyNowBtn.classList.remove('disabled-overlay'); }
+      if (buyWalletBtn) { buyWalletBtn.disabled = false; buyWalletBtn.removeAttribute('aria-disabled'); buyWalletBtn.classList.remove('disabled-overlay'); }
+    }
+    function disableBuyButtons() {
+      if (buyNowBtn) { buyNowBtn.disabled = true; buyNowBtn.setAttribute('aria-disabled','true'); buyNowBtn.classList.add('disabled-overlay'); }
+      if (buyWalletBtn) { buyWalletBtn.disabled = true; buyWalletBtn.setAttribute('aria-disabled','true'); buyWalletBtn.classList.add('disabled-overlay'); }
+    }
+
+    function isListingSold() {
+      return containerEl && containerEl.getAttribute('data-listing-sold') === '1';
+    }
+
+    // Initialize state based on current time and sold flag
+    const now = Date.now();
+    const soldInitially = isListingSold();
+    if (soldInitially) {
+      // If already sold server-side, ensure UI reflects that
+      setStateEnded();
+      if (buyNowBtn) { buyNowBtn.disabled = true; buyNowBtn.classList.add('disabled-overlay'); buyNowBtn.textContent = "🔒 Sold"; }
+      if (buyWalletBtn) { buyWalletBtn.disabled = true; buyWalletBtn.classList.add('disabled-overlay'); buyWalletBtn.textContent = "🔒 Sold"; }
+    } else if (now < startTime) {
+      setStateNotStarted();
+    } else if (now >= startTime && now <= endTime) {
+      setStateActive();
+    } else {
+      // Auction ended — ensure winner can still pay if they are the winner
+      setStateEnded();
+    }
+
+    // If auction ended and current user is the winner — ensure buy buttons are available
+    function ensureWinnerCanPayUI() {
+      const serverBuyerId = String(serverBuyer || "");
+      if (!isListingSold() && currentUserId && serverBuyerId && currentUserId === serverBuyerId) {
+        // Give the winner the ability to pay even if they left and returned
+        enableBuyButtons();
+      }
+    }
+    ensureWinnerCanPayUI();
+
+    // Add retry UI if payment status suggests retry needed and current user is the buyer/winner
+    function renderRetryButtonIfNeeded() {
+      try {
+        const placeholder = document.getElementById('retry-button-placeholder');
+        if (!placeholder) return;
+
+        // Only allow retry if there's an orderId and the current user is the buyer/winner
+        const serverBuyerId = String(serverBuyer || "");
+        if (!orderId || !currentUserId || currentUserId !== serverBuyerId) {
+          // remove any existing retry button
+          placeholder.innerHTML = '';
+          return;
+        }
+
+        // Normalize status to lowercase
+        const st = String(paymentStatus || '').toLowerCase();
+
+        // Show retry when payment is 'failed' or 'pending' (you can adjust statuses as needed)
+        if (st === 'failed' || st === 'pending' || st === 'requires_payment' || st === 'requires_action') {
+          // Create Retry Payment button (card retry)
+          placeholder.innerHTML = '';
+          const retryBtn = document.createElement('button');
+          retryBtn.className = 'btn btn-retry px-4';
+          retryBtn.id = 'retry-payment-btn';
+          retryBtn.type = 'button';
+          retryBtn.textContent = '↻ Retry Payment';
+          placeholder.appendChild(retryBtn);
+
+          retryBtn.addEventListener('click', async () => {
+            try {
+              retryBtn.disabled = true;
+              retryBtn.textContent = '⏳ Starting...';
+              // call server endpoint to create a retry checkout session for the order
+              const res = await fetch(`/orders/${encodeURIComponent(orderId)}/retry`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ listingId, amount: currentPrice })
+              });
+              const data = await res.json();
+              if (!res.ok || !data.ok) {
+                alert('Retry failed: ' + (data.message || 'Unknown error'));
+                retryBtn.disabled = false;
+                retryBtn.textContent = '↻ Retry Payment';
+                return;
+              }
+
+              // If server returned a redirect url for payment checkout
+              if (data.url) {
+                // For card flows - send user to checkout
+                window.location.href = data.url;
+                return;
+              }
+
+              // If server returned that payment is already paid or redirect to order page
+              if (data.redirectToOrder) {
+                window.location.href = `/orders/${orderId}`;
+                return;
+              }
+
+              // If server returns order updated & payment succeeded
+              if (data.paymentStatus && String(data.paymentStatus).toLowerCase() === 'succeeded') {
+                // replace buttons with view orders
+                const btnContainer = document.getElementById('buy-buttons-container');
+                if (btnContainer) {
+                  btnContainer.innerHTML = '';
+                  const viewOrders = document.createElement('a');
+                  viewOrders.href = '/profile/orders';
+                  viewOrders.className = 'btn btn-warning px-4';
+                  viewOrders.textContent = '✅ View Orders';
+                  btnContainer.appendChild(viewOrders);
+                }
+                showFlash('Payment succeeded — thank you!', 5000);
+                return;
+              }
+
+              // otherwise, re-enable
+              retryBtn.disabled = false;
+              retryBtn.textContent = '↻ Retry Payment';
+              showFlash('Retry initiated — follow the payment page if redirected.', 4000);
+            } catch (err) {
+              console.error('Retry error', err);
+              alert('Failed to start retry: ' + (err.message || err));
+              try { retryBtn.disabled = false; retryBtn.textContent = '↻ Retry Payment'; } catch(e){}
+            }
+          });
+        } else {
+          // no retry needed — remove placeholder
+          placeholder.innerHTML = '';
+        }
+      } catch (e) {
+        console.error('renderRetryButtonIfNeeded error', e);
+      }
+    }
+
+    // initial render of retry button (paymentStatus may be provided by server)
+    renderRetryButtonIfNeeded();
+
+    // Countdown timer handles both start and end transitions
+    const tick = () => {
+      const now = Date.now();
+
+      if (now < startTime) {
+        const dist = startTime - now;
+        const d = Math.floor(dist / (1000*60*60*24));
+        const h = Math.floor((dist % (1000*60*60*24)) / (1000*60*60));
+        const m = Math.floor((dist % (1000*60*60)) / (1000*60));
+        const s = Math.floor((dist % (1000*60)) / 1000);
+        if (countdownEl) countdownEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
+        setStateNotStarted();
+        return;
+      }
+
+      if (now >= startTime && now <= endTime) {
+        const dist = endTime - now;
+        const d = Math.floor(dist / (1000*60*60*24));
+        const h = Math.floor((dist % (1000*60*60*24)) / (1000*60*60));
+        const m = Math.floor((dist % (1000*60*60)) / (1000*60));
+        const s = Math.floor((dist % (1000*60)) / 1000);
+        if (countdownEl) countdownEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
+        setStateActive();
+        return;
+      }
+
+      // now > endTime
+      setStateEnded();
+      ensureWinnerCanPayUI();
+    };
+
+    tick();
+    const tickInterval = setInterval(() => tick(), 1000);
+
+    // Bidding: send bid to server
     bidButtons.forEach(btn => {
-      if (btn.getAttribute("type") !== "button") btn.setAttribute("type","button");
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         const inc = parseInt(btn.getAttribute("data-amount"));
-        if (!isNaN(inc) && inc > 0) { currentPrice += inc; renderPrice(); }
+        if (isNaN(inc) || inc <= 0) return;
+        try {
+          const res = await fetch(`/listings/${listingId}/bid`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify({ amount: (currentPrice || 0) + inc })
+          });
+          const data = await res.json();
+          if (!res.ok || !data.ok) {
+            alert("Bid failed: " + (data.message || "Unknown error"));
+            return;
+          }
+          // server returns currentBid — update UI
+          currentPrice = Number(data.currentBid || currentPrice + inc);
+          renderPrice();
+        } catch (err) {
+          console.error("Bid error", err);
+          alert("Failed to place bid.");
+        }
       });
     });
 
-    // Buy with Card (Stripe) - include purpose: "listing_purchase"
-    if (buyNowBtn) {
-      buyNowBtn.addEventListener("click", async () => {
-        try {
-          buyNowBtn.disabled = true;
-          const res = await fetch("/payment/create-checkout-session", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              listingId: "<%= listing._id %>",
-              title: "<%= listing.title %>",
-              description: "<%= listing.description %>",
-              updatedPrice: currentPrice,
-              purpose: "listing_purchase"
-            }),
-          });
-          const data = await res.json();
-          if (!data.url) throw new Error(data.error || "Checkout session creation failed.");
-          window.location.href = data.url; // redirects to /payment/success on success (see routes/payment.js)
-        } catch (err) {
-          alert("❌ Payment failed: " + err.message);
-          console.error(err);
-        } finally {
-          buyNowBtn.disabled = false;
-        }
-      });
-    }
-
-    // Buy with Wallet - robust JSON handling + login redirect
-    if (buyWalletBtn) {
-      buyWalletBtn.addEventListener("click", async () => {
-        try {
-          buyWalletBtn.disabled = true;
-          const res = await fetch(`/listings/<%= listing._id %>/buy-wallet`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json"    // 👈 tell server we expect JSON
-            },
-            body: JSON.stringify({ amount: currentPrice })
-          });
-
-          if (res.status === 401) {
-            // not logged in (server should send JSON 401, but handle here too)
-            window.location.href = "/login";
-            return;
-          }
-
-          const ct = res.headers.get("content-type") || "";
-          if (!ct.includes("application/json")) {
-            // Server returned HTML (error page/redirect). Avoid weird characters.
-            const text = await res.text();
-            throw new Error("Unexpected response from server.");
-          }
-
-          const data = await res.json();
-          if (!res.ok || !data.ok) throw new Error(data.message || "Wallet purchase failed.");
-
-          alert(`✅ Purchased with wallet. New balance: ₹${(data.balance ?? 0).toLocaleString("en-IN")}`);
-          window.location.href = "/wallet?success=1";
-        } catch (err) {
-          alert("❌ " + err.message);
-          console.error(err);
-        } finally {
-          buyWalletBtn.disabled = false;
-        }
-      });
-    }
-
-    // Countdown (disables bidding when ended; Buy buttons remain available)
-    const endTime = new Date("<%= listing.endTime %>").getTime();
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const distance = endTime - now;
-      if (distance <= 0) {
-        if (countdownEl) countdownEl.textContent = "⏱ Bidding Ended";
-        clearInterval(timer);
-        bidButtons.forEach(btn => btn.disabled = true);
-        return;
+    // Named click handlers so we can remove/replace them on listing:sold
+    async function buyNowClickHandler(e) {
+      if (buyNowBtn.disabled) return;
+      try {
+        // temporarily disable to prevent double clicks but not permanently
+        buyNowBtn.disabled = true;
+        const res = await fetch("/payment/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            listingId,
+            title: "<%= listing.title.replace(/\"/g, '\\"') %>",
+            description: "<%= (listing.description || '').replace(/\"/g, '\\"') %>",
+            updatedPrice: currentPrice,
+            purpose: "listing_purchase"
+          }),
+        });
+        const data = await res.json();
+        if (!data.url) throw new Error(data.error || "Checkout session creation failed.");
+        // redirect to Stripe checkout — if user cancels and returns, we rely on server state (listing.sold) and the initialization code to re-enable buttons for winner
+        window.location.href = data.url;
+      } catch (err) {
+        alert("❌ Payment failed: " + (err.message || err));
+        console.error(err);
+      } finally {
+        // re-enable so if they don't get redirected, they can try again
+        try { if (!isListingSold()) buyNowBtn.disabled = false; } catch(e){}
       }
-      const d = Math.floor(distance / (1000*60*60*24));
-      const h = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-      const m = Math.floor((distance % (1000*60*60)) / (1000*60));
-      const s = Math.floor((distance % (1000*60)) / 1000);
-      if (countdownEl) countdownEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
-    }, 1000);
+    }
+
+    async function buyWalletClickHandler(e) {
+      if (buyWalletBtn.disabled) return;
+      try {
+        buyWalletBtn.disabled = true;
+        const res = await fetch(`/listings/${listingId}/buy-wallet`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({ amount: currentPrice })
+        });
+        if (res.status === 401) {
+          window.location.href = "/login";
+          return;
+        }
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.message || "Wallet purchase failed.");
+        // On success server should mark listing sold and emit listing:sold
+        alert(`✅ Purchased with wallet. New balance: ₹${(data.balance ?? 0).toLocaleString("en-IN")}`);
+        window.location.href = "/wallet?success=1";
+      } catch (err) {
+        alert("❌ " + (err.message || err));
+        console.error(err);
+      } finally {
+        try { if (!isListingSold()) buyWalletBtn.disabled = false; } catch(e){}
+      }
+    }
+
+    // Attach handlers if buttons exist
+    if (buyNowBtn) buyNowBtn.addEventListener('click', buyNowClickHandler);
+    if (buyWalletBtn) buyWalletBtn.addEventListener('click', buyWalletClickHandler);
+
+    // Toast helper (shows a small corner notification)
+    function showFlash(message, timeout = 5000) {
+      const div = document.createElement("div");
+      div.className = "bid-flash";
+      div.innerHTML = `<div class="bid-text">${escapeHtml(message)}</div><button class="close-flash" aria-label="close">&times;</button>`;
+      flashContainer.prepend(div);
+      const closeBtn = div.querySelector(".close-flash");
+      closeBtn.addEventListener("click", () => div.remove());
+      setTimeout(() => div.remove(), timeout);
+    }
+
+    // If server sent a flash error, show it as a corner toast as well
+    try {
+      if (window.__serverFlashError && String(window.__serverFlashError).trim()) {
+        setTimeout(() => {
+          try { showFlash(window.__serverFlashError, 8000); } catch (e) { console.error(e); }
+        }, 200);
+      }
+    } catch (e) { console.error(e); }
+
+    // small escape to prevent XSS
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return str;
+      return str.replace(/[&<>"'`=\/]/g, function(s){ return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;", "'":"&#39;","/":"&#x2F;","`":"&#x60;","=":"&#x3D;"}[s]); });
+    }
+
+    // Socket.IO real-time updates
+    const socket = io();
+
+    // join the listing room so only viewers of this page get events for this listing
+    socket.emit('joinListing', listingId);
+
+    // handle incoming newBidFlash: show toast with bidder name + amount
+    socket.on('newBidFlash', (data) => {
+      try {
+        if (!data || String(data.listingId) !== String(listingId)) return;
+        const bidder = data.bidderName || 'Someone';
+        const amt = data.amount ?? data.currentBid ?? '';
+        showFlash(`${bidder} placed a bid of ₹${fmtINR(amt)}`);
+      } catch (e) { console.error(e); }
+    });
+
+    // updateHighestBid: update displayed highest bid (but DO NOT enable buy buttons while auction active)
+    socket.on('updateHighestBid', (data) => {
+      try {
+        if (!data || String(data.listingId) !== String(listingId)) return;
+        const hb = data.highestBid || {};
+        const hbUserId = String(hb.user || hb.userId || hb.highestBidderId || "");
+        const hbAmount = Number(hb.amount || hb.currentBid || 0);
+
+        // update local highest bidder id & price shown
+        highestBidderId = hbUserId || highestBidderId;
+        if (hbAmount && !Number.isNaN(hbAmount)) {
+          currentPrice = hbAmount;
+          renderPrice();
+        }
+      } catch (e) { console.error(e); }
+    });
+
+    // Also update if server emits generic auction:bid (backwards compatibility)
+    socket.on('auction:bid', (data) => {
+      if (!data) return;
+      if (String(data.listingId) === String(listingId)) {
+        currentPrice = Number(data.currentBid || currentPrice);
+        renderPrice();
+      }
+    });
+
+    // auction started/ended handlers
+    socket.on('auction:started', (data) => {
+      if (!data) return;
+      if (String(data.listingId) === String(listingId)) {
+        setStateActive();
+        if (typeof data.currentBid !== 'undefined') {
+          currentPrice = Number(data.currentBid || currentPrice);
+          renderPrice();
+        }
+      }
+    });
+
+    socket.on('auction:ended', (data) => {
+      if (!data) return;
+      if (String(data.listingId) === String(listingId)) {
+        // server should include highestBidder/winner when emitting auction:ended
+        if (data.highestBidder) {
+          winnerId = String(data.highestBidder);
+        }
+        currentPrice = Number(data.finalPrice || data.currentBid || currentPrice);
+        renderPrice();
+        setStateEnded();
+        if (countdownEl) countdownEl.textContent = "";
+        auctionStatusText.textContent = "Bidding ended";
+
+        // If auction ended and current user is the winner, ensure they can pay
+        ensureWinnerCanPayUI();
+
+        if (data.highestBidder) {
+          showFlash(`Auction ended — winner: ${data.highestBidder} at ₹${fmtINR(currentPrice)}`, 8000);
+        } else {
+          showFlash(`Auction ended — final price ₹${fmtINR(currentPrice)}`, 6000);
+        }
+      }
+    });
+
+    // listing:sold event when someone uses buy-now route or wallet succeeds
+    socket.on('listing:sold', (data) => {
+      try {
+        if (!data || String(data.listingId) !== String(listingId)) return;
+
+        // Update buyer/winnerId from payload if present
+        if (data.buyerId) winnerId = String(data.buyerId);
+
+        // Update price
+        currentPrice = Number(data.soldPrice || currentPrice);
+        renderPrice();
+
+        // Mark container attribute so other logic knows it's sold
+        const container = document.querySelector('[data-listing-id="' + listingId + '"]');
+        if (container) container.setAttribute('data-listing-sold', '1');
+
+        // Ensure auction ended UI
+        setStateEnded();
+
+        // Show toast for everyone
+        showFlash(`Listing sold to ${data.buyerName || 'Buyer'} for ₹${fmtINR(currentPrice)}`, 2000);
+
+        // If current user is the buyer/winner -> convert buttons to "View Orders"
+        if (currentUserId && data.buyerId && String(currentUserId) === String(data.buyerId)) {
+          try { if (buyNowBtn) buyNowBtn.removeEventListener('click', buyNowClickHandler); } catch (e) {}
+          try { if (buyWalletBtn) buyWalletBtn.removeEventListener('click', buyWalletClickHandler); } catch (e) {}
+
+          const btnContainer = document.getElementById('buy-buttons-container');
+          if (btnContainer) {
+            btnContainer.innerHTML = '';
+            const viewOrders = document.createElement('a');
+            viewOrders.href = '/profile/orders'; // always redirect to profile orders
+            viewOrders.className = 'btn btn-warning px-4';
+            viewOrders.textContent = '✅ View Orders';
+            btnContainer.appendChild(viewOrders);
+          }
+        } else {
+          // For everyone else: mark as sold and keep disabled
+          if (buyNowBtn) {
+            buyNowBtn.disabled = true;
+            buyNowBtn.classList.add('disabled-overlay');
+            buyNowBtn.textContent = "🔒 Sold";
+          }
+          if (buyWalletBtn) {
+            buyWalletBtn.disabled = true;
+            buyWalletBtn.classList.add('disabled-overlay');
+            buyWalletBtn.textContent = "🔒 Sold";
+          }
+          // also if no buy buttons present (server rendered as sold), ensure badge shown
+          const badgeExists = document.querySelector('.sold-badge');
+          if (!badgeExists) {
+            const priceBox = document.querySelector('.price-box');
+            if (priceBox) {
+              const badge = document.createElement('span');
+              badge.className = 'sold-badge';
+              badge.textContent = 'SOLD';
+              priceBox.parentNode.insertBefore(badge, priceBox.nextSibling);
+            }
+          }
+        }
+
+        // If the server included order/payment data in the listing:sold event, update local orderId/paymentStatus
+        if (data.orderId) {
+          try {
+            if (container) container.dataset.orderId = data.orderId;
+          } catch (e) {}
+        }
+        if (data.paymentStatus) {
+          paymentStatus = String(data.paymentStatus);
+        }
+        // re-render retry button state (likely to be removed because sold => no retry)
+        renderRetryButtonIfNeeded();
+
+        // Auto reload after 2.2 seconds (optional)
+        setTimeout(() => {
+          window.location.reload();
+        }, 2200);
+
+      } catch (e) {
+        console.error("Error handling listing:sold:", e);
+      }
+    });
+
+    // Ensure initial buy-button enablement matches server state (server rendered vars)
+    (function initBuyButtonsFromServerAttrs() {
+      try {
+        const now = Date.now();
+        if (isListingSold()) {
+          // Already sold server-side -> disable and show sold
+          if (buyNowBtn) { buyNowBtn.disabled = true; buyNowBtn.textContent = "🔒 Sold"; }
+          if (buyWalletBtn) { buyWalletBtn.disabled = true; buyWalletBtn.textContent = "🔒 Sold"; }
+          return;
+        }
+
+        if (now >= startTime && now <= endTime) {
+          // auction active -> buy buttons disabled for everyone
+          disableBuyButtons();
+        } else {
+          // auction ended or not started -> enable only for winner/buyer
+          if (currentUserId && serverBuyer && currentUserId === String(serverBuyer)) {
+            enableBuyButtons();
+          } else {
+            disableBuyButtons();
+          }
+        }
+      } catch (e) { console.error(e); }
+    })();
+
+    // Clean up on unload
+    window.addEventListener('beforeunload', () => {
+      clearInterval(tickInterval);
+      try {
+        socket.emit('leaveListing', listingId);
+        socket.disconnect();
+      } catch (e) {}
+    });
   });
 </script>

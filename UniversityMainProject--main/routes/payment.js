@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const Listing = require("../models/listing");
+const Order = require("../models/order");
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -50,6 +51,7 @@ router.post("/create-checkout-session", async (req, res) => {
         purpose: purpose || "listing_purchase",
         listingId: listingId || "",
         amount: String(amount),
+        title: title || ""
       },
     };
 
@@ -106,13 +108,121 @@ router.post("/stripe/webhook", async (req, res) => {
             });
             await user.save();
             console.log(`✅ Wallet top-up: Credited ₹${amount} to ${customerEmail}`);
+          } else {
+            console.warn(`Wallet top-up: customer email ${customerEmail} not found in users.`);
           }
+        } else {
+          console.warn("Wallet top-up: no customer email available in session.");
         }
       }
 
       if (purpose === "listing_purchase" && listingId) {
-        console.log(`✅ Listing ${listingId} purchased for ₹${amount}`);
-        // optional: mark listing as sold
+        try {
+          // Find buyer by email if available
+          let buyer = null;
+          if (customerEmail) {
+            buyer = await User.findOne({ email: customerEmail });
+          }
+
+          // Pull listing snapshot (lean not required because we may update later)
+          const listing = await Listing.findById(listingId).exec();
+
+          // Build order item snapshot
+          const itemSnapshot = {
+            listing: listing ? listing._id : null,
+            title: listing ? listing.title : (session.metadata?.title || "Listing"),
+            image: listing ? listing.image : "/images/default-listing.jpg",
+            price: amount,
+            quantity: 1,
+          };
+
+          const newOrder = new Order({
+            buyer: buyer ? buyer._id : null,
+            items: [itemSnapshot],
+            payment: {
+              provider: "stripe",
+              providerPaymentId: session.payment_intent || session.id || null,
+              method: "card",
+              status: "succeeded",
+              raw: session,
+            },
+            subtotal: amount,
+            shippingCost: 0,
+            total: amount,
+            status: "paid",
+            seller: listing ? listing.owner || null : null,
+          });
+
+          await newOrder.save();
+
+          // Attempt to atomically mark the listing sold
+          try {
+            const paymentInfoForListing = {
+              provider: "stripe",
+              providerPaymentId: session.payment_intent || session.id || null,
+              amount,
+              raw: {
+                sessionId: session.id,
+                checkout: undefined, // avoid saving heavy objects; set if needed
+              },
+            };
+
+            const updatedListing = await Listing.markSoldIfAvailable(
+              listingId,
+              buyer ? buyer._id : null,
+              paymentInfoForListing
+            );
+
+            if (!updatedListing) {
+              // Listing already sold; issue a refund and update order status accordingly
+              console.warn(`Listing ${listingId} already sold. Attempting refund for payment_intent=${session.payment_intent}`);
+
+              try {
+                if (session.payment_intent) {
+                  const refund = await stripe.refunds.create({
+                    payment_intent: session.payment_intent,
+                    metadata: { reason: "listing_already_sold", listingId, orderId: newOrder._id.toString() },
+                  });
+
+                  newOrder.status = "refunded";
+                  newOrder.refund = {
+                    id: refund.id,
+                    status: refund.status,
+                    amount_refunded: refund.amount,
+                    createdAt: new Date(),
+                  };
+                  await newOrder.save();
+
+                  console.log(`🔁 Refunded order ${newOrder._id} (refund id: ${refund.id}) because listing was already sold.`);
+                } else {
+                  // No payment_intent available — mark order failed and alert for manual refund
+                  newOrder.status = "failed";
+                  newOrder.failureReason = "Listing already sold; no payment_intent available for automatic refund.";
+                  await newOrder.save();
+                  console.error("Cannot automatically refund: session.payment_intent is missing. Manual refund required.");
+                }
+              } catch (refundErr) {
+                // Refund failed — mark order with refund failure for manual intervention
+                newOrder.status = "refund_failed";
+                newOrder.refund = newOrder.refund || {};
+                newOrder.refund.error = refundErr.message;
+                await newOrder.save();
+                console.error("Automatic refund failed:", refundErr);
+              }
+            } else {
+              // Successfully marked listing sold — nothing else required here.
+              console.log(`✅ Listing ${listingId} atomically marked sold to buyer ${buyer ? buyer._id : "unknown (email-only)"} (Order ${newOrder._id}).`);
+            }
+          } catch (markErr) {
+            // If marking the listing failed for other reasons, log and set order status for manual review
+            console.error("Error while attempting to mark listing sold:", markErr);
+            newOrder.status = "needs_review";
+            newOrder.failureReason = `Error marking listing sold: ${markErr.message}`;
+            await newOrder.save();
+          }
+        } catch (err) {
+          console.error("Error creating order from stripe webhook:", err);
+        }
       }
     }
 

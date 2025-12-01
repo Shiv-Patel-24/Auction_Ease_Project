@@ -1,177 +1,21 @@
-// // ======================================================================
-// //  OLD VERSION (COMMENTED OUT - for reference only)
-// // ======================================================================
-
-// // const express = require("express");
-// // const router = express.Router();
-// // const wrapAsync = require("../utils/wrapAsync");
-// // const passport = require("passport");
-// // const { saveRedirectUrl } = require("../middleware.js");
-// //
-// // router.get("/signup", (req, res) => {
-// //     res.render("users/signup.ejs");
-// // });
-// //
-// // router.post("/signup", wrapAsync(async(req, res)=>{
-// //     try {
-// //         let { username, email, password } = req.body;
-// //         const newUser = new User({email,  username  });
-// //         const registerUser = await User.register(newUser, password)
-// //         console.log(registerUser)
-// //         req.login(registerUser, (err) => {  
-// //             if(err){
-// //                 return next(err);
-// //             }
-// //             req.flash("success", `Welcome ${registerUser.username}!`);
-// //             res.render("/listings")
-// //         });
-// //     } catch (error) {
-// //         req.flash("error", error.message);
-// //         res.redirect("/signup");
-// //     }
-// // }))
-// //
-// // router.get("/login", (req, res) => {
-// //     res.render("users/login.ejs");
-// // });
-// //
-// // router.post("/login", saveRedirectUrl,passport.authenticate("local", {  failureRedirect:'/login', failureFlash: true }), async (req, res) => {
-// //     req.flash("success", "Welcome to Shiv Project")
-// //     let redirectUrl = res.locals.redirectUrl || "/listings"; // if redirectUrl is not set, default to "/listings"
-// //     res.redirect(redirectUrl);
-// // });
-// //
-// // router.get("/logout", (req, res) => {   
-// //     req.logOut((err) =>{
-// //         if((err) =>{
-// //             return next(err);
-// //         })
-// //         req.flash("success", "You have successfully logged out.");
-// //         res.redirect("/listings");
-// //     });
-// // });
-// //
-// // module.exports = router;
-
-
-// // ======================================================================
-// //  NEW WORKING VERSION (with fixes)
-// // ======================================================================
-
-// const express = require("express");
-// const router = express.Router();
-// const wrapAsync = require("../utils/wrapAsync");
-// const passport = require("passport");
-// const { saveRedirectUrl } = require("../middleware.js");
-// const User = require("../models/user"); // Import User model
-
-// /* =========================
-//    GET: Signup form
-//    ========================= */
-// router.get("/signup", (req, res) => {
-//   res.render("users/signup.ejs");
-// });
-
-// /* =========================
-//    POST: Signup
-//    ========================= */
-// router.post(
-//   "/signup",
-//   wrapAsync(async (req, res, next) => {
-//     try {
-//       const { username, email, password } = req.body;
-//       const newUser = new User({ email, username });
-//       const registeredUser = await User.register(newUser, password);
-
-//       req.login(registeredUser, (err) => {
-//         if (err) return next(err);
-//         req.flash("success", `Welcome ${registeredUser.username}!`);
-//         return res.redirect("/listings"); // ✅ go to listings after signup
-//       });
-//     } catch (error) {
-//       req.flash("error", error.message);
-//       res.redirect("/signup");
-//     }
-//   })
-// );
-
-// /* =========================
-//    GET: Login form
-//    ========================= */
-// router.get("/login", (req, res) => {
-//   res.render("users/login.ejs");
-// });
-
-// /* =========================
-//    POST: Login
-//    ========================= */
-// router.post(
-//   "/login",
-//   saveRedirectUrl, // may set res.locals.redirectUrl
-//   passport.authenticate("local", {
-//     failureRedirect: "/login",
-//     failureFlash: true,
-//   }),
-//   (req, res) => {
-//     req.flash("success", "Welcome back!");
-
-//     // Start with provided redirect or default to /listings
-//     let redirectUrl = res.locals.redirectUrl || "/listings";
-
-//     // Ensure it's safe (string + relative path)
-//     if (typeof redirectUrl !== "string" || !redirectUrl.startsWith("/")) {
-//       redirectUrl = "/listings";
-//     }
-
-//     // Disallow API-ish or non-landing endpoints
-//     const disallowedTargets = [
-//       /^\/wallet\/balance\b/i,
-//       /^\/payment\/stripe\/webhook\b/i,
-//       /^\/payment\/create-checkout-session\b/i,
-//       /^\/api\b/i,
-//     ];
-//     if (disallowedTargets.some((rx) => rx.test(redirectUrl))) {
-//       redirectUrl = "/listings";
-//     }
-
-//     // Clear returnTo if set
-//     if (req.session) delete req.session.returnTo;
-
-//     return res.redirect(redirectUrl);
-//   }
-// );
-
-// /* =========================
-//    GET: Logout
-//    ========================= */
-// router.get("/logout", (req, res, next) => {
-//   req.logout((err) => {
-//     if (err) return next(err);
-//     req.flash("success", "You have successfully logged out.");
-//     res.redirect("/listings"); // ✅ always to listings
-//   });
-// });
-
-// module.exports = router;
-
-
+// routes/user.js
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
 const passport = require("passport");
-const { saveRedirectUrl } = require("../middleware.js");
-const User = require("../models/user"); // Import User model
+const { saveRedirectUrl, isAdmin } = require("../middleware.js");
+const User = require("../models/user"); // User model (passport-local-mongoose)
 
-/* =========================
+/* -----------------------------
    GET: Signup form
-   ========================= */
+   ----------------------------- */
 router.get("/signup", (req, res) => {
   res.render("users/signup.ejs");
 });
 
-/* =========================
-   POST: Signup
-   ========================= */
+/* -----------------------------
+   POST: Signup (local) — emits newUser via Socket.IO
+   ----------------------------- */
 router.post(
   "/signup",
   wrapAsync(async (req, res, next) => {
@@ -180,10 +24,30 @@ router.post(
       const newUser = new User({ email, username });
       const registeredUser = await User.register(newUser, password);
 
+      // Emit 'newUser' event to Socket.IO so admin dashboards can update live.
+      // Only expose safe fields to clients.
+      try {
+        const io = req.app.get("io");
+        if (io) {
+          io.emit("newUser", {
+            _id: registeredUser._id,
+            username: registeredUser.username,
+            email: registeredUser.email,
+            isAdmin: registeredUser.isAdmin || false,
+            createdAt: registeredUser.createdAt
+              ? registeredUser.createdAt.toISOString()
+              : new Date().toISOString(),
+          });
+        }
+      } catch (emitErr) {
+        // Log but do not block signup if sockets fail
+        console.error("Socket emit error (newUser):", emitErr);
+      }
+
       req.login(registeredUser, (err) => {
         if (err) return next(err);
         req.flash("success", `Welcome ${registeredUser.username}!`);
-        return res.redirect("/listings"); // ✅ go to listings after signup
+        return res.redirect("/listings");
       });
     } catch (error) {
       req.flash("error", error.message);
@@ -192,19 +56,19 @@ router.post(
   })
 );
 
-/* =========================
+/* -----------------------------
    GET: Login form
-   ========================= */
+   ----------------------------- */
 router.get("/login", (req, res) => {
   res.render("users/login.ejs");
 });
 
-/* =========================
+/* -----------------------------
    POST: Login
-   ========================= */
+   ----------------------------- */
 router.post(
   "/login",
-  saveRedirectUrl, // may set res.locals.redirectUrl
+  saveRedirectUrl, // optional middleware that sets res.locals.redirectUrl
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
@@ -213,14 +77,14 @@ router.post(
     req.flash("success", "Welcome back!");
 
     // Start with provided redirect or default to /listings
-    let redirectUrl = res.locals.redirectUrl || "/listings";
+    let redirectUrl = res.locals.redirectUrl || "/";
 
     // Ensure it's safe (string + relative path)
     if (typeof redirectUrl !== "string" || !redirectUrl.startsWith("/")) {
       redirectUrl = "/listings";
     }
 
-    // Disallow API-ish or non-landing endpoints
+    // Disallow sensitive/non-landing endpoints from being the redirect target
     const disallowedTargets = [
       /^\/wallet\/balance\b/i,
       /^\/payment\/stripe\/webhook\b/i,
@@ -231,47 +95,94 @@ router.post(
       redirectUrl = "/listings";
     }
 
-    // Clear returnTo if set
+    // Clear stored returnTo in session if present
     if (req.session) delete req.session.returnTo;
 
     return res.redirect(redirectUrl);
   }
 );
 
-/* =========================
-   ✨ GOOGLE OAUTH ROUTES ✨
-   ========================= */
-
-// GET /auth/google -> The route that starts the Google login process
-router.get('/auth/google',
-  passport.authenticate('google', { 
-    scope: ['profile', 'email'] // We ask Google for the user's profile and email
+/* -----------------------------
+   GOOGLE OAUTH ROUTES
+   ----------------------------- */
+// Initiate Google OAuth
+router.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
   })
 );
 
-// GET /auth/google/callback -> The route Google redirects back to after login
-router.get('/auth/google/callback', 
-  passport.authenticate('google', { 
-    failureRedirect: '/login', // If login fails, redirect back to the login page
-    failureFlash: true
+// Callback URL for Google OAuth
+router.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    failureFlash: true,
   }),
   (req, res) => {
-    // On successful authentication, this function is called.
-    req.flash('success', `Welcome to AuctionEase, ${req.user.username}!`);
-    res.redirect('/listings'); // Redirect to the main listings page
+    req.flash("success", `Welcome to AuctionEase, ${req.user.username}!`);
+    // NOTE: Not emitting here to avoid broadcasting returning users.
+    res.redirect("/");
   }
 );
 
-
-/* =========================
+/* -----------------------------
    GET: Logout
-   ========================= */
+   ----------------------------- */
 router.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
     req.flash("success", "You have successfully logged out.");
-    res.redirect("/"); // ✅ always to listings
+    res.redirect("/login"); // redirect to home/listings
   });
 });
+
+/* -----------------------------
+   ADMIN: Promote user to admin (Protected)
+   Usage: POST /promote/:id
+   ----------------------------- */
+router.post(
+  "/promote/:id",
+  isAdmin,
+  wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      req.flash("error", "User not found.");
+      return res.redirect("back");
+    }
+    user.isAdmin = true;
+    await user.save();
+    req.flash("success", `${user.username} is now an admin.`);
+    return res.redirect("back");
+  })
+);
+
+/* -----------------------------
+   ADMIN: Demote user from admin (Protected)
+   Usage: POST /demote/:id
+   ----------------------------- */
+router.post(
+  "/demote/:id",
+  isAdmin,
+  wrapAsync(async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      req.flash("error", "User not found.");
+      return res.redirect("back");
+    }
+    // Prevent demoting yourself inadvertently
+    if (req.user && req.user._id && req.user._id.equals(user._id)) {
+      req.flash("error", "You cannot demote yourself.");
+      return res.redirect("back");
+    }
+    user.isAdmin = false;
+    await user.save();
+    req.flash("success", `${user.username} is no longer an admin.`);
+    return res.redirect("back");
+  })
+);
 
 module.exports = router;

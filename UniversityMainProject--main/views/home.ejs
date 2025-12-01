@@ -134,6 +134,49 @@
     letter-spacing: -.01em;
   }
   .role{ color:#475569; font-weight: 600; font-size: .95rem; margin-top: .15rem; }
+  /* ===== TOP SELLING SLIDER ===== */
+  .top-selling-wrapper {
+    overflow: hidden;
+    position: relative;
+  }
+  .top-selling-track {
+    display: flex;
+    gap: 1rem;
+    animation: scrollX 25s linear infinite;
+  }
+  .top-selling-wrapper:hover .top-selling-track {
+    animation-play-state: paused; /* pause on hover */
+  }
+  .top-selling-card {
+    flex: 0 0 250px;
+    background: var(--glass-strong);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: var(--card-shadow);
+    padding: 1rem;
+    text-align: center;
+  }
+  .top-selling-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+  }
+  .top-selling-card h5 {
+    font-weight: 700;
+    margin: 0.2rem 0;
+    color: var(--ink);
+  }
+  .top-selling-card p {
+    margin: 0;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  @keyframes scrollX {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
 </style>
 
 <div class="container-narrow">
@@ -142,7 +185,7 @@
   <section class="section glass hero" data-aos="fade-up">
     <div class="hero-bg"></div>
     <div class="hero-inner">
-      <h1 class="brand">AuctionEase</h1>
+      <h1 class="brand">Welcome To AuctionEase</h1>
       <p class="tagline">A colorful, modern auction company—clarity for buyers, power for sellers, and security for everyone.</p>
       <div class="hero-badges">
         <span class="badge">⚡ Real-time feel</span>
@@ -250,6 +293,25 @@
       </div>
     </div>
   </section>
+
+  <!-- ⭐ TOP SELLING PRODUCTS LANDSCAPE SLIDER -->
+  <% if (topListings && topListings.length) { %>
+    <section class="section glass" data-aos="fade-up" data-aos-delay="60" style="padding:1.2rem;">
+      <h2 class="title">🔥 Top Selling Products</h2>
+      <div class="top-selling-wrapper">
+        <div class="top-selling-track">
+          <% topListings.concat(topListings).forEach(listing => { %>
+            <div class="top-selling-card">
+              <img src="<%= listing.image %>" alt="<%= listing.title %>">
+              <h5><%= listing.title %></h5>
+              <p>Sold <%= listing.soldCount || 0 %> times</p>
+              <p>₹<%= (listing.price || 0).toLocaleString("en-IN") %></p>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
 
   <!-- CTA -->
   <section class="section glass cta" data-aos="fade-up" data-aos-delay="260">

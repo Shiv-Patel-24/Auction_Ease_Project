@@ -1,0 +1,358 @@
+/* profile.css - global resets, improved layout and colorful glass morphism */
+
+/* ---- Global reset for profile page only (fixes the white gap & padding issues) ---- */
+html,body{
+  height:100%;
+  margin:0;         /* removes top white gap caused by browser default margin */
+  padding:0;
+  background:
+    radial-gradient(1200px 400px at 10% 10%, rgba(123,97,255,0.06), transparent 12%),
+    radial-gradient(900px 300px at 90% 0%, rgba(42,153,255,0.04), transparent 12%),
+    #fbfdff; /* subtle light canvas */
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #0b1220;
+  box-sizing:border-box;
+}
+
+/* ensure the navbar sits tight to the top and stretches full-width */
+.glass-navbar {
+  width:100%;
+  margin:0;
+  border-radius:0;
+  box-shadow: 0 6px 20px rgba(14,18,29,0.06);
+  border-bottom: 1px solid rgba(11,18,32,0.05);
+}
+
+/* reduce the container horizontal padding a bit so the nav looks neat */
+.navbar-container {
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+}
+
+/* ---- Page container - centered with comfortable max width ---- */
+.profile-page {
+  max-width:1180px;
+  margin: 1.75rem auto 4rem; /* smaller top margin so nav and hero feel closer */
+  padding: 0 1.25rem;
+}
+
+/* ---- Design tokens ---- */
+:root {
+  --card-radius: 14px;
+  --accent-1: 42, 153, 255;   /* blue */
+  --accent-2: 255, 95, 109;   /* pink */
+  --accent-3: 123, 97, 255;   /* purple */
+}
+
+/* Generic glass card */
+.glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.66));
+  border-radius: var(--card-radius);
+  padding: 1rem;
+  border: 1px solid rgba(11,18,32,0.04);
+  box-shadow:
+    0 20px 60px rgba(12,12,20,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  backdrop-filter: blur(8px) saturate(130%);
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), box-shadow 360ms;
+}
+
+/* Make hero card larger and airy */
+.profile-hero {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  padding:1.25rem;
+  margin-bottom:1.6rem;
+  overflow: visible;
+}
+
+/* Gradient hero variant (use .gradient-hero on the hero card) */
+.gradient-hero {
+  background: linear-gradient(135deg, rgba(99,102,241,0.92), rgba(236,72,153,0.90));
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 30px 80px rgba(99,102,241,0.12);
+}
+.gradient-hero .user-name,
+.gradient-hero .user-email,
+.gradient-hero .user-joined,
+.gradient-hero .chip-value,
+.gradient-hero .chip-label {
+  color: rgba(255,255,255,0.95);
+}
+
+/* left side of hero */
+.hero-left { display:flex; align-items:center; gap:1rem; }
+.avatar-wrap {
+  width:108px; height:108px; border-radius:18px;
+  display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(135deg, rgba(var(--accent-1),0.12), rgba(var(--accent-3),0.10));
+  box-shadow: 0 12px 32px rgba(12,12,20,0.06);
+  padding:8px;
+  transition: transform 300ms ease, box-shadow 300ms ease;
+}
+.avatar-img {
+  width:92px; height:92px; border-radius:12px; object-fit:cover;
+  border: 3px solid rgba(255,255,255,0.85);
+  background:white;
+}
+
+/* Avatar hover lift */
+.avatar-wrap:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 18px 40px rgba(99,102,241,0.12); }
+
+/* user meta */
+.user-name { font-size:1.55rem; margin:0; font-weight:800; color:#0b1220; letter-spacing: -0.3px; }
+.user-email { margin:6px 0 0 0; color: rgba(11,18,32,0.55); font-weight:600; }
+.user-joined { margin-top:6px; color: rgba(11,18,32,0.45); font-size:0.95rem; }
+
+/* right side of hero */
+.hero-right { display:flex; flex-direction:column; align-items:flex-end; gap:10px; min-width:220px; }
+
+/* balance chip */
+.glass-chip {
+  display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.9rem; border-radius:12px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.88), rgba(255,255,255,0.85));
+  border: 1px solid rgba(11,18,32,0.03); box-shadow: 0 8px 26px rgba(7,12,20,0.04);
+}
+.gradient-hero .glass-chip {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+}
+.chip-icon { width:26px; height:26px; color: rgba(11,18,32,0.7); }
+.chip-label { font-size:0.78rem; color: rgba(11,18,32,0.55); margin-bottom:2px; }
+.chip-value { font-weight:800; color:#0b1220; }
+.gradient-hero .chip-label, .gradient-hero .chip-value { color: rgba(255,255,255,0.95); }
+
+/* actions */
+.profile-actions { display:flex; gap:0.6rem; align-items:center; }
+
+/* buttons */
+.btn { padding:0.5rem 0.95rem; border-radius:10px; text-decoration:none; font-weight:700; font-size:0.95rem; display:inline-flex; align-items:center; justify-content:center; }
+.btn-primary {
+  background: linear-gradient(90deg, rgba(var(--accent-1),1), rgba(var(--accent-3),1));
+  color:white; box-shadow: 0 12px 30px rgba(42,153,255,0.12);
+  border:none;
+}
+.btn-primary:hover { transform: translateY(-4px); box-shadow: 0 18px 42px rgba(42,153,255,0.14); }
+.btn-outline {
+  background: transparent; border: 1px solid rgba(11,18,32,0.06); color: rgba(11,18,32,0.9);
+}
+.btn-outline:hover { transform: translateY(-3px); }
+
+/* gradient and glass button variants */
+.gradient-btn {
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  color: #fff !important;
+  border: 0;
+  box-shadow: 0 10px 30px rgba(102,126,234,0.14);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.gradient-btn:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 18px 40px rgba(118,75,162,0.18); }
+
+.glass-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #0b1220;
+  transition: background 180ms ease, transform 180ms ease;
+}
+.glass-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-2px);
+}
+
+/* hover glow for cards */
+.hover-glow { transition: transform 260ms cubic-bezier(.2,.9,.2,1), box-shadow 260ms; }
+.hover-glow:hover {
+  box-shadow: 0 20px 60px rgba(99,102,241,0.18);
+  transform: translateY(-8px) scale(1.01);
+}
+
+/* sections and grid */
+.section-title { margin:.6rem 0; font-size:1.25rem; font-weight:800; color:#0b1220; }
+.cards-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+/* item card */
+.item-card { display:flex; gap:0.9rem; align-items:center; padding:0.9rem; cursor:default; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,249,250,0.96)); }
+.item-card:hover { transform: translateY(-6px) scale(1.005); box-shadow: 0 20px 60px rgba(5,7,12,0.06); }
+.item-thumb { width:120px; height:84px; border-radius:10px; overflow:hidden; flex-shrink:0; background: #f6f8fb; }
+.item-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.item-body { flex:1; }
+.item-title { font-weight:700; color:#0b1220; text-decoration:none; display:block; margin-bottom:6px; }
+.item-meta { display:flex; gap:8px; align-items:center; color: rgba(11,18,32,0.6); font-size:0.95rem; }
+.price { font-weight:700; color:#0b1220; }
+
+/* empty card */
+.empty-card { padding:1rem; text-align:left; color: rgba(11,18,32,0.75); border-radius:12px; }
+
+/* reveal animation */
+.reveal { opacity:0; transform: translateY(10px) scale(.997); transition: opacity .6s ease, transform .6s cubic-bezier(.2,.9,.2,1); }
+.reveal.in-view { opacity:1; transform: translateY(0) scale(1); }
+
+/* avatar pulse animation */
+.pulse { animation: pulseGlow 2.2s infinite alternate; }
+@keyframes pulseGlow {
+  from { box-shadow: 0 0 12px rgba(236,72,153,0.18); transform: translateY(0); }
+  to   { box-shadow: 0 0 30px rgba(99,102,241,0.22); transform: translateY(-4px); }
+}
+
+/* debug banner (optional) */
+.debug-banner {
+  margin-top: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.88);
+  color: #0b1220;
+  font-size: 0.95rem;
+  border: 1px solid rgba(11,18,32,0.04);
+  box-shadow: 0 6px 18px rgba(12,12,20,0.04);
+}
+
+/* -------------------------------
+   PURCHASES: redesigned purchase cards
+   ------------------------------- */
+
+/* container for purchases */
+.purchase-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  margin-top: 0.5rem;
+}
+
+/* purchase card */
+.purchase-card {
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(250,250,255,0.95));
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(11,18,32,0.04);
+  box-shadow: 0 18px 50px rgba(12,12,20,0.04);
+}
+
+/* left thumbnail */
+.purchase-thumb {
+  width: 120px;
+  height: 100px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f4f6fa;
+  display:flex; align-items:center; justify-content:center;
+}
+.purchase-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
+}
+
+/* right body */
+.purchase-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+/* title and meta */
+.purchase-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0b1220;
+  margin: 0 0 6px;
+}
+.purchase-meta {
+  font-size: 0.95rem;
+  color: rgba(11,18,32,0.72);
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+/* footer row: date + status */
+.purchase-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.6rem;
+  gap: 1rem;
+}
+
+/* bought date chip */
+.date-chip {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(42,153,255,0.06);
+  border: 1px solid rgba(42,153,255,0.12);
+  border-radius: 20px;
+  color: rgba(42,153,255,0.95);
+  font-weight: 700;
+}
+
+/* status badge (Completed / Pending stylings) */
+.status-badge {
+  font-size: 0.82rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #06d6a0, #1dd1a1);
+  color: white;
+  box-shadow: 0 6px 16px rgba(6,214,160,0.18);
+}
+
+/* alternate pending badge */
+.status-badge.pending {
+  background: linear-gradient(90deg, #ffd166, #ff8a00);
+  box-shadow: 0 6px 16px rgba(255,138,0,0.12);
+  color: #332f27;
+}
+
+/* total spent (small helper above purchases) */
+.total-spent {
+  margin-bottom: 0.6rem;
+  font-weight: 800;
+  color: #0b1220;
+  font-size: 1rem;
+}
+
+/* responsive for purchases */
+@media (max-width: 720px) {
+  .purchase-card {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .purchase-thumb {
+    width: 100%;
+    height: 160px;
+  }
+}
+
+/* responsive tweaks */
+@media (max-width:980px) {
+  .profile-page { margin-top:1rem; padding:0 1rem; }
+  .profile-hero { flex-direction:column; align-items:flex-start; gap:1rem; padding:1rem; }
+  .hero-right { align-items:flex-start; width:100%; flex-direction:row; justify-content:space-between; }
+  .avatar-wrap { width:88px; height:88px; padding:6px; }
+  .avatar-img { width:74px; height:74px; }
+  .cards-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .purchase-grid { gap: 0.9rem; }
+}
+
+@media (max-width:520px) {
+  .item-thumb { width:84px; height:64px; }
+  .hero-right { gap:8px; }
+  .btn { font-size:0.9rem; padding:0.45rem 0.75rem; }
+  .purchase-title { font-size: 1rem; }
+}

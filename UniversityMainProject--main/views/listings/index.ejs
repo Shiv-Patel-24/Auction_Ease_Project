@@ -1,11 +1,16 @@
 <% layout("/layouts/boilerplate.ejs") %>
-<%= success %>
+
+<%
+// res.locals.success in your app is an array from connect-flash.
+// Take first message if exists so the client can render it.
+const flashMsg = (typeof success !== 'undefined' && Array.isArray(success) && success.length) ? success[0] : "";
+%>
 
 <head>
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
 </head>
 
-<body class="bg-body-ios text-dark">
+<body class="bg-body-ios text-dark" data-flash="<%= flashMsg ? flashMsg.replace(/"/g, '&quot;') : '' %>">
   <div class="container py-4">
     <h2 class="mb-4 fw-bold text-center display-5 animated-logo-text">
       Welcome to <span class="text-dark">Auction</span><span class="gradient-highlight">Ease</span>
@@ -18,36 +23,70 @@
 
     <!-- Listings -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="listingsContainer">
-      <% for (let listings of allListings) { %>
-        <div class="col listing-card" data-title="<%= listings.title.toLowerCase() %>" data-aos="fade-up">
-          <div class="card h-100 ios-card shadow border-0 rounded-4">
+      <% for (let listing of allListings) { %>
+        <div class="col listing-card" data-title="<%= listing.title.toLowerCase() %>" data-aos="fade-up" data-listing-id="<%= listing._id %>" data-listing-sold="<%= listing.sold ? '1' : '0' %>">
+          <div class="card h-100 ios-card shadow border-0 rounded-4 position-relative overflow-hidden">
+            <!-- SOLD badge (rendered server-side if sold) -->
+            <% if (listing.sold) { %>
+              <div class="sold-badge-server">SOLD</div>
+            <% } %>
+
             <!-- Image -->
             <div class="ratio ratio-4x3 overflow-hidden rounded-top image-wrapper-ios d-flex align-items-center justify-content-center">
-              <img src="<%= listings.image %>" alt="Listing Image" class="w-100 h-100 object-fit-contain p-3" />
+              <img src="<%= listing.image %>" alt="Listing Image" class="w-100 h-100 object-fit-contain p-3" />
             </div>
 
             <!-- Info -->
             <div class="card-body text-center">
-              <h5 class="card-title text-dark mb-2 fw-semibold"><%= listings.title %></h5>
+              <h5 class="card-title text-dark mb-2 fw-semibold"><%= listing.title %></h5>
+
+              <!-- Current Price (hidden if sold) -->
+              <% if (!listing.sold) { %>
+                <p class="fw-bold text-primary mb-1 price-wrapper">
+                  ₹ <span data-listing-price-id="<%= listing._id %>"><%= (listing.currentPriceToShow || listing.price || 0).toLocaleString("en-IN") %></span>
+                </p>
+              <% } else { %>
+                <p class="fw-bold text-muted mb-1 price-wrapper visually-hidden" aria-hidden="true"></p>
+              <% } %>
 
               <!-- Countdown Timer -->
-              <% if (listings.endTime) { %>
+              <% if (listing.endTime || listing.startTime) { %>
                 <p class="text-danger small mb-1 fw-semibold">
-                  ⏳ Ends in: 
-                  <span class="countdown-timer" data-endtime="<%= new Date(listings.endTime).toISOString() %>">Loading...</span>
+                  <!-- Show a single timer that will display starts/ends depending on times -->
+                  <span class="countdown-timer" 
+                        data-endtime="<%= listing.endTime ? new Date(listing.endTime).toISOString() : '' %>"
+                        data-starttime="<%= listing.startTime ? new Date(listing.startTime).toISOString() : '' %>">
+                    Loading...
+                  </span>
                 </p>
               <% } else { %>
                 <p class="text-muted small mb-1">⏳ End Time Not Available</p>
               <% } %>
 
-              <% if (listings.condition) { %>
+              <% if (listing.condition) { %>
                 <div class="mb-2">
-                  <span class="badge bg-light border border-warning text-dark text-capitalize fs-6"><%= listings.condition %></span>
+                  <span class="badge bg-light border border-warning text-dark text-capitalize fs-6"><%= listing.condition %></span>
                 </div>
               <% } %>
 
-              <!-- Bid Button -->
-              <a href="/listings/<%= listings._id %>" class="btn btn-ios w-75">Place a Bid</a>
+              <!-- Actions -->
+              <div class="d-flex flex-column align-items-center gap-2 mt-2">
+                <!-- Place a Bid always links to single listing where bidding UI lives -->
+                <a href="/listings/<%= listing._id %>" class="btn btn-ios w-75">Place a Bid</a>
+
+                <!-- Buy Buttons: show buy link only when auction not active and not sold -->
+                <% if (listing.sold) { %>
+                  <button class="btn btn-outline-secondary w-75 sold-button" disabled>✅ Sold</button>
+                <% } else if (!listing.isAuctionActive) { %>
+                  <a href="/listings/<%= listing._id %>"
+                     class="btn btn-dark w-75 buy-now-btn"
+                     data-listing-buy-id="<%= listing._id %>">
+                    🛒 Buy Now — ₹<span><%= (listing.currentPriceToShow || listing.price || 0).toLocaleString("en-IN") %></span>
+                  </a>
+                <% } else { %>
+                  <button class="btn btn-secondary w-75 auction-running" disabled data-listing-buy-id="<%= listing._id %>">⏳ Auction Running</button>
+                <% } %>
+              </div>
             </div>
           </div>
         </div>
@@ -57,9 +96,14 @@
 
   <!-- AOS Library -->
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <!-- Socket.IO (served by server) -->
+  <script src="/socket.io/socket.io.js"></script>
 
   <script>
     AOS.init({ duration: 700, once: true });
+
+    // Helper: format INR
+    const fmtINR = n => Number(n || 0).toLocaleString("en-IN");
 
     document.addEventListener("DOMContentLoaded", function () {
       const searchInput = document.getElementById("searchInput");
@@ -73,38 +117,271 @@
         });
       });
 
+      // Countdown timers (handles start & end times)
       const timers = document.querySelectorAll(".countdown-timer");
       timers.forEach(timer => {
-        const endTime = new Date(timer.getAttribute("data-endtime")).getTime();
-        if (isNaN(endTime)) {
-          timer.textContent = "Bidding Ended";
-          return;
-        }
+        const endAttr = timer.getAttribute("data-endtime");
+        const startAttr = timer.getAttribute("data-starttime");
+        const endTime = endAttr ? new Date(endAttr).getTime() : NaN;
+        const startTime = startAttr ? new Date(startAttr).getTime() : NaN;
+        const containingCard = timer.closest(".listing-card");
+        const priceEl = containingCard?.querySelector("[data-listing-price-id]");
 
         const updateCountdown = () => {
-          const now = new Date().getTime();
-          const distance = endTime - now;
+          const now = Date.now();
 
-          if (distance <= 0) {
-            timer.textContent = "Bidding Ended";
+          // not started yet
+          if (!isNaN(startTime) && now < startTime) {
+            const distance = startTime - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            timer.textContent = `Starts in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            // auction-running button should stay disabled
             return;
           }
 
-          const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-          const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-          const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-          const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          // active bidding period
+          if (!isNaN(endTime) && now <= endTime) {
+            const distance = endTime - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            timer.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            return;
+          }
 
-          timer.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+          // bidding ended
+          timer.textContent = "Bidding Ended";
+
+          // transform disabled auction-running button into an active buy link (only if not sold)
+          if (containingCard) {
+            const buyBtn = containingCard.querySelector("[data-listing-buy-id]");
+            const listingId = priceEl?.getAttribute("data-listing-price-id") || containingCard.getAttribute("data-listing-id") || null;
+
+            // Only proceed if listing not marked sold
+            const isSold = containingCard.getAttribute("data-listing-sold") === "1";
+            if (isSold) return;
+
+            // If buyBtn is a disabled button (auction running), replace it with an anchor
+            if (buyBtn && buyBtn.tagName === "BUTTON") {
+              const finalPriceText = priceEl ? priceEl.textContent.trim() : (containingCard.querySelector("[data-listing-price-id]")?.textContent || "0");
+              const anchor = document.createElement("a");
+              anchor.className = "btn btn-dark w-75 buy-now-btn";
+              anchor.href = `/listings/${listingId || ''}`;
+              anchor.setAttribute("data-listing-buy-id", listingId || "");
+              anchor.innerHTML = "🛒 Buy Now — ₹<span>" + finalPriceText + "</span>";
+              buyBtn.parentNode.replaceChild(anchor, buyBtn);
+            }
+          }
         };
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
       });
+
+      // Socket.IO realtime updates
+      const socket = io();
+
+      // When someone places a higher bid, update the shown price
+      socket.on('auction:bid', (data) => {
+        try {
+          const { listingId, currentBid } = data;
+          const priceEl = document.querySelector(`[data-listing-price-id="${listingId}"]`);
+          if (priceEl) priceEl.textContent = fmtINR(currentBid);
+        } catch (e) { console.error(e); }
+      });
+
+      // When auction ends, update final price and enable buy button (if not sold)
+      socket.on('auction:ended', (data) => {
+        try {
+          const { listingId, finalPrice } = data;
+          const priceEl = document.querySelector(`[data-listing-price-id="${listingId}"]`);
+          if (priceEl) priceEl.textContent = fmtINR(finalPrice);
+
+          const buyEl = document.querySelector(`[data-listing-buy-id="${listingId}"]`);
+          const card = document.querySelector(`[data-listing-id="${listingId}"]`);
+
+          // Only update buy button if listing isn't already sold
+          const isSold = card && card.getAttribute("data-listing-sold") === "1";
+          if (isSold) return;
+
+          // If it's a button (disabled), replace with active anchor
+          if (buyEl && buyEl.tagName === "BUTTON") {
+            const anchor = document.createElement("a");
+            anchor.className = "btn btn-dark w-75 buy-now-btn";
+            anchor.href = `/listings/${listingId}`;
+            anchor.innerHTML = "🛒 Buy Now — ₹<span>" + fmtINR(finalPrice) + "</span>";
+            buyEl.parentNode.replaceChild(anchor, buyEl);
+          } else if (buyEl && buyEl.tagName === "A") {
+            // if already anchor, update price text inside it
+            const span = buyEl.querySelector("span");
+            if (span) span.textContent = fmtINR(finalPrice);
+          }
+        } catch (e) { console.error(e); }
+      });
+
+      // When a listing is sold (from server after payment), update UI:
+      // - set data-listing-sold
+      // - hide/remove price
+      // - show SOLD badge
+      // - replace buy button with disabled "Sold" button
+      socket.on('listing:sold', (data) => {
+        try {
+          const { listingId, buyerId, soldPrice, orderId } = data;
+          const card = document.querySelector(`[data-listing-id="${listingId}"]`);
+          if (!card) return;
+
+          // mark sold
+          card.setAttribute("data-listing-sold", "1");
+
+          // hide price element (if present)
+          const priceWrapper = card.querySelector(".price-wrapper");
+          if (priceWrapper) {
+            priceWrapper.classList.add("visually-hidden");
+            // optional: remove content
+            const priceSpan = priceWrapper.querySelector(`[data-listing-price-id="${listingId}"]`);
+            if (priceSpan) priceSpan.textContent = "";
+          }
+
+          // add sold badge if not already present
+          if (!card.querySelector(".sold-badge-client") && !card.querySelector(".sold-badge-server")) {
+            const badge = document.createElement("div");
+            badge.className = "sold-badge-client";
+            badge.textContent = "SOLD";
+            // insert at top of card
+            const cardInner = card.querySelector(".card");
+            if (cardInner) cardInner.prepend(badge);
+            else card.prepend(badge);
+          }
+
+          // replace buy button or disable it
+          const buyEl = card.querySelector("[data-listing-buy-id]");
+          if (buyEl) {
+            const soldBtn = document.createElement("button");
+            soldBtn.className = "btn btn-outline-secondary w-75 sold-button";
+            soldBtn.disabled = true;
+            soldBtn.textContent = "✅ Sold";
+            buyEl.parentNode.replaceChild(soldBtn, buyEl);
+          } else {
+            // ensure there is a sold-button visible
+            const actionsWrap = card.querySelector(".d-flex.flex-column");
+            if (actionsWrap && !actionsWrap.querySelector(".sold-button")) {
+              const soldBtn = document.createElement("button");
+              soldBtn.className = "btn btn-outline-secondary w-75 sold-button";
+              soldBtn.disabled = true;
+              soldBtn.textContent = "✅ Sold";
+              actionsWrap.appendChild(soldBtn);
+            }
+          }
+
+        } catch (e) { console.error("Error handling listing:sold", e); }
+      });
+
+      // --- Flash-message-to-dropdown logic ---
+      (function showFlashAsDropdown() {
+        const flash = document.body.getAttribute('data-flash') || "";
+        if (!flash) return;
+
+        // try anchor near profile avatar
+        const profileEl = document.querySelector('.navbar-profile');
+        let anchorRect = null;
+        if (profileEl) anchorRect = profileEl.getBoundingClientRect();
+
+        // create toast element
+        const toast = document.createElement('div');
+        toast.className = 'profile-flash-toast slide-in';
+        toast.innerHTML = `
+          <div class="toast-inner">
+            <div class="toast-text">${escapeHtml(flash)}</div>
+            <button type="button" class="toast-close" aria-label="Close">&times;</button>
+          </div>
+        `;
+        document.body.appendChild(toast);
+
+        // position it near profile if possible
+        const margin = 8;
+        if (anchorRect) {
+          // place just under avatar, offset by page scroll
+          const left = Math.max(12, anchorRect.left + window.scrollX - 10);
+          const top  = anchorRect.bottom + window.scrollY + margin;
+          toast.style.left = left + 'px';
+          toast.style.top  = top + 'px';
+        } else {
+          // fallback: top center
+          toast.style.left = '50%';
+          toast.style.transform = 'translateX(-50%)';
+          toast.style.top = '80px';
+        }
+
+        // close action
+        const closeBtn = toast.querySelector('.toast-close');
+        closeBtn.addEventListener('click', () => hideToast(toast));
+
+        // auto-hide after 4.5s
+        setTimeout(() => hideToast(toast), 4500);
+
+        function hideToast(node) {
+          if (!node) return;
+          node.classList.remove('slide-in');
+          node.classList.add('fade-out');
+          setTimeout(() => node.remove(), 400);
+        }
+
+        // simple html escape
+        function escapeHtml(str) {
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+      })();
+      // --- end flash logic ---
     });
   </script>
 
-  <!-- Custom Style -->
+  <!-- toast CSS -->
+  <style>
+    .profile-flash-toast {
+      position: absolute;
+      z-index: 4000;
+      background: rgba(255,255,255,0.96);
+      border-radius: 12px;
+      box-shadow: 0 18px 40px rgba(12,12,20,0.12);
+      border: 1px solid rgba(11,18,32,0.06);
+      padding: 0.5rem 0.75rem;
+      min-width: 220px;
+      max-width: 360px;
+      display: flex;
+      align-items: center;
+      transition: transform 240ms ease, opacity 240ms ease;
+      transform-origin: top right;
+      opacity: 0;
+    }
+    .profile-flash-toast.slide-in { transform: translateY(0); opacity: 1; animation: toastIn 260ms ease forwards; }
+    .profile-flash-toast.fade-out { opacity: 0; transform: translateY(-6px); transition: opacity 300ms ease, transform 300ms ease; }
+
+    .profile-flash-toast .toast-inner { display:flex; align-items:center; gap:12px; width:100%; }
+    .profile-flash-toast .toast-text { font-weight:700; color:#0b1220; font-size:0.96rem; flex:1; }
+    .profile-flash-toast .toast-close { background:transparent; border:0; font-size:1.1rem; color:#666; cursor:pointer; padding:6px; border-radius:8px; }
+    .profile-flash-toast .toast-close:hover { background: rgba(0,0,0,0.04); color:#222; }
+
+    @keyframes toastIn {
+      from { transform: translateY(-8px) scale(.995); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    /* small-screen fallback */
+    @media (max-width:700px) {
+      .profile-flash-toast { left: 50% !important; transform: translateX(-50%); top: 72px !important; }
+    }
+  </style>
+
+  <!-- Custom Style (kept from your original file) -->
   <style>
     body {
       font-family: 'Inter', 'SF Pro Display', sans-serif;
@@ -162,7 +439,6 @@
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
       border-radius: 22px;
-      image-radius: 22px;
       overflow: hidden;
     }
 
@@ -197,6 +473,34 @@
     .countdown-timer {
       font-weight: 600;
       color: #3668a1;
+    }
+
+    /* SOLD badge styles */
+    .sold-badge-server,
+    .sold-badge-client {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(180deg, #ff385c, #e11d48);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+      box-shadow: 0 10px 30px rgba(225, 29, 72, 0.18);
+      z-index: 20;
+    }
+
+    .sold-button {
+      background: linear-gradient(180deg, #f3f4f6, #e5e7eb);
+      color: #4b5563;
+      border: 1px solid rgba(11,18,32,0.06);
+      font-weight: 700;
+    }
+
+    .visually-hidden {
+      display: none !important;
     }
 
     @media (max-width: 768px) {
