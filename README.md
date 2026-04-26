@@ -2,7 +2,7 @@
 
 **Auction Ease** is an online auction platform built with **Node.js**, **Express**, **EJS**, and **MongoDB**.  
 This project includes a fully functional **Admin Panel** to manage listings, users, and reviews with **role-based authentication**.
-""Last year project**
+**Last year project**
 ---
 
 ## 🚀 Features
